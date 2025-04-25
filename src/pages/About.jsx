@@ -51,7 +51,7 @@ const AboutUs = () => {
       </div>
 
       {/* Clients Section (Now Separate from the Image) */}
-      <div className="w-full py-10 bg-white">
+      <div className="w-full py-6 bg-white">
         <h1 className="text-3xl md:text-5xl font-semibold text-center text-gray-700 mb-10">
           Our Clients and Partners
         </h1>
@@ -81,7 +81,7 @@ const ClientCarousel = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full h-30">
       <Slider {...settings}>
         {[...clients, ...clients].map((image, index) => (
           <div key={index} className="px-4 flex justify-center items-center">
