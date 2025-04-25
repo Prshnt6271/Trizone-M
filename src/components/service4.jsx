@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 import i1 from "../assets/services/i1.jpg";
@@ -49,6 +49,15 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
 };
 
 const RotatingImages = ({ images }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const imageElements = images.map((img) => new Image().src = img);
+    setLoaded(true);
+  }, [images]);
+
+  if (!loaded) return null;
+
   return (
     <div className="absolute inset-0 bg-gray-800 overflow-hidden z-0 rounded-xl will-change-transform">
       {images.map((img, index) => (

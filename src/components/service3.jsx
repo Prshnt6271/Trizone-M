@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 import a1 from "../assets/services/a1.jpg";
@@ -7,10 +7,18 @@ import a3 from "../assets/services/a3.jpg";
 import a4 from "../assets/services/a4.jpg";
 import a5 from "../assets/services/a5.jpg";
 
-
 const RotatingImages = ({ images }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const imageElements = images.map((img, index) => new Image().src = img);
+    setLoaded(true);
+  }, [images]);
+
+  if (!loaded) return null;
+
   return (
-    <div className="absolute inset-0  overflow-hidden bg-gray-800">
+    <div className="absolute inset-0 overflow-hidden bg-gray-800">
       {images.map((img, index) => (
         <motion.img
           key={index}
@@ -42,7 +50,7 @@ const Service3 = () => {
   const letters = headingText.split("");
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="min-h-screen bg-[#1b1b1b] text-white flex flex-col md:flex-row items-center justify-between px-8 md:px-20 py-16"
     >
@@ -71,7 +79,7 @@ const Service3 = () => {
 
       {/* Right: Animated Images */}
       <div className="md:w-1/2 flex justify-center relative h-[400px]">
-        <RotatingImages images={[a1, a2, a3,a4,a5]} />
+        <RotatingImages images={[a1, a2, a3, a4, a5]} />
       </div>
     </section>
   );

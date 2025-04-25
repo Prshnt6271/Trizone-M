@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 
-const images = ["/about1.jpg", "/about2.webp", "/about3.jpg"];
+const images = ["/about1.jpg", "/about2.jpg", "/about3.jpg", "/about4.jpg"];
 
 const paragraphs = [
-  "OUR SUCCESS IS DUE TO THE TALENTED ARCHITECTS, INTERIOR DESIGNERS, TECHNICIANS, AND ADMINISTRATORS WORKING AS AN EFFICIENT TEAM.",
-  "THE COLLECTIVE POTENTIAL OF THE TALENTED AND COMMITTED INDIVIDUALS WHO WORK WITH WOW IS THE FIRM’S GREATEST ASSET.",
-  "WE CAPITALIZE ON THE DIVERSITY OF CULTURE, CHARACTER AND TALENT THAT OUR TEAM BRINGS TO THE STUDIO.",
+  "Profile\nVibhor Mehra is a registered architect (COA) and an Associate of the Indian Institute of Architects (IIA). As the Founding Partner and Principal Architect, he brings over 16 years of experience in the field of architecture, contributing significantly to the design and execution of complex building projects across India. A graduate in architecture, Vibhor is known for his ability to blend technical precision with creative expression, making him a valuable asset in every phase of project development—from concept to completion.",
+  
+  "Experience\nOver the years, Vibhor has worked with esteemed architectural firms such as Ajoy Choudhury Associates (Gurgaon), Neev (Jodhpur, Rajasthan), and Neel Ghia – Architect (Ahmedabad, Gujarat). These collaborations have enriched his understanding of regional contexts, building typologies, and diverse client needs. His role has spanned across design development, detailing, and coordination of large-scale residential, commercial, and hospitality projects, giving him a well-rounded perspective on architectural practice.",
+
+  "Specializations\nVibhor’s approach to architecture is deeply rooted in sustainability and responsiveness to climate. He specializes in site planning and the integration of environmentally conscious strategies into architecture and landscape design. His expertise lies in crafting spaces that are not only functional but also harmoniously tied to their environment. With a strong command over graphic representation and conceptual visualization, he adds an artistic flair to presentation drawings—bringing architectural ideas to life with clarity and impact.",
+  
+  "Project Highlights\nHis portfolio includes noteworthy projects like Greenwood Elements in Kolkata, ILD Spire Group Housing in Gurgaon, and Marriott Courtyard in Kolkata. These projects stand as a testament to his ability to manage scale, navigate complexity, and deliver contextually grounded design solutions. Whether working on luxury hospitality or urban residential developments, Vibhor’s focus remains on quality, innovation, and sustainability."
 ];
 
 const clients = [
@@ -44,14 +48,17 @@ const AboutUs = () => {
 
         {/* Text Box */}
         <div className="absolute top-[40%] left-[2%] md:top-[40%] md:left-[34%] max-w-[370px] md:max-w-[550px] bg-black/60 p-6 rounded-md">
+          <h2 className="text-white text-xl md:text-2xl font-bold uppercase mb-4">
+            {paragraphs[currentIndex].split("\n")[0]}
+          </h2>
           <p className="text-white text-lg md:text-2xl font-semibold text-left">
-            {paragraphs[currentIndex]}
+            {paragraphs[currentIndex].split("\n").slice(1).join("\n")}
           </p>
         </div>
       </div>
 
       {/* Clients Section (Now Separate from the Image) */}
-      <div className="w-full py-6 bg-white">
+      <div className="w-full py-6 bg-white h-72">
         <h1 className="text-3xl md:text-5xl font-semibold text-center text-gray-700 mb-10">
           Our Clients and Partners
         </h1>
