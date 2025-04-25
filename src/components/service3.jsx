@@ -11,27 +11,36 @@ const RotatingImages = ({ images }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const imageElements = images.map((img, index) => new Image().src = img);
+    images.forEach((img) => {
+      const image = new Image();
+      image.src = img;
+    });
     setLoaded(true);
   }, [images]);
 
   if (!loaded) return null;
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-gray-800">
+    <div className="absolute inset-0 overflow-hidden bg-gray-800 z-0 rounded-xl">
       {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
           alt={`img-${index}`}
           className="absolute w-full h-full object-cover"
+          style={{
+            transform: "translateZ(0)",
+            willChange: "opacity",
+            zIndex: 0,
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 1, 0] }}
           transition={{
             duration: 6,
             repeat: Infinity,
-            repeatDelay: index * 2,
-            ease: "easeInOut"
+            repeatDelay: images.length * 0.5,
+            delay: index * 2,
+            ease: "easeInOut",
           }}
         />
       ))}
@@ -52,10 +61,10 @@ const Service3 = () => {
   return (
     <section
       ref={sectionRef}
-      className="min-h-screen bg-[#1b1b1b] text-white flex flex-col md:flex-row items-center justify-between px-8 md:px-20 py-16"
+      className="min-h-screen bg-[#1b1b1b] text-white flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-16"
     >
       {/* Left: Text Content */}
-      <div className="md:w-1/2 space-y-6">
+      <div className="md:w-1/2 space-y-6 z-10">
         <p className="text-sm text-gray-300">✦ Website design with purpose.</p>
         <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">
           {letters.map((letter, i) => {
@@ -77,8 +86,8 @@ const Service3 = () => {
         </p>
       </div>
 
-      {/* Right: Animated Images */}
-      <div className="md:w-1/2 flex justify-center relative h-[400px]">
+      {/* Right: Rotating Images */}
+      <div className="w-full md:w-1/2 h-[400px] relative overflow-hidden rounded-xl z-0 mt-10 md:mt-0">
         <RotatingImages images={[a1, a2, a3, a4, a5]} />
       </div>
     </section>
