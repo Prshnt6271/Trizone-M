@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 import i1 from "../assets/services/i1.jpg";
@@ -20,6 +20,14 @@ import p3 from "../assets/services/p3.jpg";
 import p4 from "../assets/services/p4.jpg";
 import p5 from "../assets/services/p5.jpg";
 import p6 from "../assets/services/p6.jpg";
+
+// Preload images
+const preloadImages = (imageUrls) => {
+  imageUrls.forEach(url => {
+    const img = new Image();
+    img.src = url;
+  });
+};
 
 const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
@@ -46,24 +54,66 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
   );
 };
 
+const OptimizedImage = ({ src, alt, className, loaded, onLoad }) => {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={`${className} transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+      onLoad={onLoad}
+      loading="lazy"
+    />
+  );
+};
+
 const RotatingImages = ({ images }) => {
+  const [loadedImages, setLoadedImages] = useState({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleImageLoad = (index) => {
+    setLoadedImages(prev => ({ ...prev, [index]: true }));
+  };
+
+  useEffect(() => {
+    // Preload next image in sequence
+    const preloadNext = () => {
+      const nextIndex = (currentIndex + 1) % images.length;
+      const img = new Image();
+      img.src = images[nextIndex];
+      img.onload = () => {
+        setTimeout(() => {
+          setCurrentIndex(nextIndex);
+        }, 8000); // Match the animation duration
+      };
+    };
+
+    const timer = setTimeout(preloadNext, 8000);
+    return () => clearTimeout(timer);
+  }, [currentIndex, images]);
+
   return (
     <div className="absolute inset-0 overflow-hidden z-0 rounded-xl will-change-transform">
       {images.map((img, index) => (
-        <motion.img
+        <motion.div
           key={index}
-          src={img}
-          alt="Rotating"
-          className="absolute h-full w-full object-cover will-change-transform"
+          className="absolute h-full w-full"
           initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 0] }}
+          animate={{ 
+            opacity: index === currentIndex ? [0, 1, 0] : 0 
+          }}
           transition={{
             duration: 8,
-            repeat: Infinity,
-            delay: index * 2,
             ease: 'easeInOut'
           }}
-        />
+        >
+          <OptimizedImage
+            src={img}
+            alt="Service"
+            className="h-full w-full object-cover"
+            loaded={loadedImages[index] || index === 0}
+            onLoad={() => handleImageLoad(index)}
+          />
+        </motion.div>
       ))}
     </div>
   );
@@ -75,6 +125,11 @@ const Service4 = () => {
     target: sectionRef,
     offset: ['start end', 'end start']
   });
+
+  useEffect(() => {
+    // Preload all images when component mounts
+    preloadImages([i1, i2, i3, i4, i5, l1, l2, l3, l4, l5, l6, p1, p2, p3, p4, p5, p6]);
+  }, []);
 
   return (
     <section 
