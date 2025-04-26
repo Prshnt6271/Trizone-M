@@ -17,7 +17,11 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
         const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
 
         return (
-          <motion.span key={i} style={{ opacity, color }} className="inline-block">
+          <motion.span 
+            key={i} 
+            style={{ opacity, color }} 
+            className="inline-block will-change-transform"
+          >
             {letter === " " ? "\u00A0" : letter}
           </motion.span>
         );
@@ -28,13 +32,13 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
 
 const RotatingImages = ({ images }) => {
   return (
-    <div className="absolute inset-0 overflow-hidden z-0 rounded-xl">
+    <div className="absolute inset-0 overflow-hidden z-0 rounded-xl will-change-transform">
       {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
           alt="Rotating"
-          className="absolute h-full w-full object-cover"
+          className="absolute h-full w-full object-cover will-change-transform"
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 1, 0] }}
           transition={{
@@ -57,9 +61,13 @@ const Service3 = () => {
   });
 
   return (
-    <section ref={sectionRef} className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-12 md:space-y-28 overflow-hidden">
+    <section 
+      ref={sectionRef} 
+      className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-12 md:space-y-28 overflow-hidden"
+      style={{ transformStyle: 'preserve-3d' }}
+    >
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
-        <div className="w-full md:w-1/2 space-y-6 z-10 order-2 md:order-1">
+        <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
             <AnimatedLetters text="Architecture" scrollYProgress={scrollYProgress} range={[0, 0.3]} />
           </h2>
@@ -67,7 +75,7 @@ const Service3 = () => {
             Architecture is more than buildings; it's about form, light, and human connection. Our approach combines functionality and timeless aesthetics to create structures that resonate with their environment and purpose.
           </p>
         </div>
-        <div className="w-full md:w-1/2 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl order-1 md:order-2">
+        <div className="w-full md:w-1/2 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl">
           <RotatingImages images={[a1, a2, a3, a4]} />
         </div>
       </div>
