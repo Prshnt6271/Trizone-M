@@ -54,66 +54,62 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
   );
 };
 
-const OptimizedImage = ({ src, alt, className, loaded, onLoad }) => {
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className={`${className} transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-      onLoad={onLoad}
-      loading="lazy"
-    />
-  );
-};
-
 const RotatingImages = ({ images }) => {
-  const [loadedImages, setLoadedImages] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handleImageLoad = (index) => {
-    setLoadedImages(prev => ({ ...prev, [index]: true }));
-  };
+  const [nextIndex, setNextIndex] = useState(1);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Preload next image in sequence
-    const preloadNext = () => {
-      const nextIndex = (currentIndex + 1) % images.length;
-      const img = new Image();
-      img.src = images[nextIndex];
-      img.onload = () => {
-        setTimeout(() => {
-          setCurrentIndex(nextIndex);
-        }, 8000); // Match the animation duration
-      };
+    // Preload all images on component mount
+    const preload = async () => {
+      await Promise.all(images.map(url => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = url;
+          img.onload = resolve;
+        });
+      }));
+      setLoaded(true);
     };
+    preload();
+  }, [images]);
 
-    const timer = setTimeout(preloadNext, 8000);
-    return () => clearTimeout(timer);
-  }, [currentIndex, images]);
+  useEffect(() => {
+    if (!loaded) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex(nextIndex);
+      setNextIndex((nextIndex + 1) % images.length);
+    }, 3000); // Change image every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [nextIndex, loaded, images.length]);
+
+  if (!loaded) {
+    return (
+      <div className="absolute inset-0 bg-gray-800 rounded-xl"></div>
+    );
+  }
 
   return (
     <div className="absolute inset-0 overflow-hidden z-0 rounded-xl will-change-transform">
       {images.map((img, index) => (
-        <motion.div
+        <motion.img
           key={index}
-          className="absolute h-full w-full"
+          src={img}
+          alt="Service"
+          className="absolute h-full w-full object-cover"
           initial={{ opacity: 0 }}
           animate={{ 
-            opacity: index === currentIndex ? [0, 1, 0] : 0 
+            opacity: index === currentIndex ? 1 : 0,
+            transition: { duration: 0.8 }
           }}
+          exit={{ opacity: 0 }}
           transition={{
-            duration: 8,
+            duration: 0.8,
             ease: 'easeInOut'
           }}
-        >
-          <OptimizedImage
-            src={img}
-            alt="Service"
-            className="h-full w-full object-cover"
-            loaded={loadedImages[index] || index === 0}
-            onLoad={() => handleImageLoad(index)}
-          />
-        </motion.div>
+        />
       ))}
     </div>
   );
