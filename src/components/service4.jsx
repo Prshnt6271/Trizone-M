@@ -1,4 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+
+// Service4.js
+import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 import i1 from "../assets/services/i1.jpg";
@@ -23,23 +25,16 @@ import p6 from "../assets/services/p6.jpg";
 
 const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
-
   return (
     <>
       {letters.map((letter, i) => {
-        const [rangeStart, rangeEnd] = range;
-        const start = rangeStart + (i / letters.length) * (rangeEnd - rangeStart);
-        const end = start + (0.5 / letters.length) * (rangeEnd - rangeStart);
-
+        const [startRange, endRange] = range;
+        const start = startRange + (i / letters.length) * (endRange - startRange);
+        const end = start + (0.5 / letters.length) * (endRange - startRange);
         const opacity = useTransform(scrollYProgress, [start, end], [0.3, 1]);
         const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
-
         return (
-          <motion.span
-            key={i}
-            style={{ opacity, color, willChange: 'opacity, color' }}
-            className="inline-block"
-          >
+          <motion.span key={i} style={{ opacity, color }} className="inline-block">
             {letter === " " ? "\u00A0" : letter}
           </motion.span>
         );
@@ -49,35 +44,21 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
 };
 
 const RotatingImages = ({ images }) => {
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    images.forEach((img) => {
-      const image = new Image();
-      image.src = img;
-    });
-    setLoaded(true);
-  }, [images]);
-
-  if (!loaded) return null;
-
   return (
-    <div className="absolute inset-0 bg-gray-800 overflow-hidden z-0 rounded-xl" style={{ transform: 'translateZ(0)', willChange: 'transform' }}>
+    <div className="absolute inset-0 bg-[#1b1b1b] overflow-hidden z-0 rounded-xl">
       {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
-          alt={`rotating-${index}`}
-          className="absolute w-full h-full object-cover"
-          style={{ willChange: 'opacity', zIndex: 0 }}
+          alt="Rotating"
+          className="absolute h-full w-full object-cover"
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 1, 0] }}
           transition={{
             duration: 8,
             repeat: Infinity,
-            repeatDelay: images.length * 0.5,
             delay: index * 2,
-            ease: "easeInOut"
+            ease: 'easeInOut'
           }}
         />
       ))}
@@ -89,7 +70,7 @@ const Service4 = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start end", "end start"]
+    offset: ['start end', 'end start']
   });
 
   return (
@@ -105,7 +86,7 @@ const Service4 = () => {
             Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters. From the texture of a wall to the way natural light moves through a room, we create interiors that are calm, refined, and effortlessly elegant. We believe in less—but better.
           </p>
         </div>
-        <div className="md:w-1/2 h-[400px] relative overflow-hidden rounded-xl z-0 w-full">
+        <div className="md:w-1/2 h-[400px] relative rounded-xl">
           <RotatingImages images={[i1, i2, i3, i4, i5]} />
         </div>
       </div>
@@ -117,10 +98,10 @@ const Service4 = () => {
             <AnimatedLetters text="Landscape Architecture" scrollYProgress={scrollYProgress} range={[0.25, 0.5]} />
           </h2>
           <p className="text-white font-medium">
-            Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments where every element has intention—from native plant selections to subtle transitions between built and natural spaces. We sculpt landscapes that feel like a natural extension of the architecture—soft, balanced, and enduring.
+            Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments where every element has intention—from native plant selections to subtle transitions between built and natural spaces.
           </p>
         </div>
-        <div className="md:w-1/2 h-[400px] relative overflow-hidden rounded-xl z-0 w-full">
+        <div className="md:w-1/2 h-[400px] relative rounded-xl">
           <RotatingImages images={[l1, l2, l3, l4, l5, l6]} />
         </div>
       </div>
@@ -132,10 +113,10 @@ const Service4 = () => {
             <AnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
           </h2>
           <p className="text-white font-medium">
-            Precision meets design. With a streamlined project management system, Trizzone ensures every detail—from concept to completion—is handled with care, efficiency, and absolute clarity. We balance creativity with control, timelines with craftsmanship, and ideas with execution.
+            Precision meets design. With a streamlined project management system, Trizzone ensures every detail—from concept to completion—is handled with care, efficiency, and absolute clarity.
           </p>
         </div>
-        <div className="md:w-1/2 h-[400px] relative overflow-hidden rounded-xl z-0 w-full">
+        <div className="md:w-1/2 h-[400px] relative rounded-xl">
           <RotatingImages images={[p1, p2, p3, p4, p5, p6]} />
         </div>
       </div>

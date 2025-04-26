@@ -1,46 +1,46 @@
-import React, { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import a1 from '../assets/services/a1.jpg';
+import a2 from '../assets/services/a2.jpg';
+import a3 from '../assets/services/a3.jpg';
+import a4 from '../assets/services/a4.jpg';
 
-import a1 from "../assets/services/a1.jpg";
-import a2 from "../assets/services/a2.jpg";
-import a3 from "../assets/services/a3.jpg";
-import a4 from "../assets/services/a4.jpg";
-import a5 from "../assets/services/a5.jpg";
+const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
+  const letters = text.split("");
+  return (
+    <>
+      {letters.map((letter, i) => {
+        const [startRange, endRange] = range;
+        const start = startRange + (i / letters.length) * (endRange - startRange);
+        const end = start + (0.5 / letters.length) * (endRange - startRange);
+        const opacity = useTransform(scrollYProgress, [start, end], [0.3, 1]);
+        const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
+        return (
+          <motion.span key={i} style={{ opacity, color }} className="inline-block">
+            {letter === " " ? "\u00A0" : letter}
+          </motion.span>
+        );
+      })}
+    </>
+  );
+};
 
 const RotatingImages = ({ images }) => {
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    images.forEach((img) => {
-      const image = new Image();
-      image.src = img;
-    });
-    setLoaded(true);
-  }, [images]);
-
-  if (!loaded) return null;
-
   return (
-    <div className="absolute inset-0 overflow-hidden bg-gray-800 z-0 rounded-xl">
+    <div className="absolute inset-0 bg-[#1b1b1b] overflow-hidden z-0 rounded-xl">
       {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
-          alt={`img-${index}`}
-          className="absolute w-full h-full object-cover"
-          style={{
-            transform: "translateZ(0)",
-            willChange: "opacity",
-            zIndex: 0,
-          }}
+          alt="Rotating"
+          className="absolute h-full w-full object-cover"
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 1, 0] }}
           transition={{
-            duration: 6,
+            duration: 8,
             repeat: Infinity,
-            repeatDelay: images.length * 0.5,
             delay: index * 2,
-            ease: "easeInOut",
+            ease: 'easeInOut'
           }}
         />
       ))}
@@ -52,46 +52,25 @@ const Service3 = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start center", "end center"]
+    offset: ['start end', 'end start']
   });
 
-  const headingText = "Architecture";
-  const letters = headingText.split("");
-
   return (
-    <section
-      ref={sectionRef}
-      className="min-h-screen bg-[#1b1b1b] text-white flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-16"
-    >
-      {/* Left: Text Content */}
-      <div className="md:w-1/2 space-y-6 z-10">
-        <p className="text-sm text-gray-300">✦ Website design with purpose.</p>
-        <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">
-          {letters.map((letter, i) => {
-            const letterProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
-            const opacity = useTransform(
-              letterProgress,
-              [i / letters.length, (i + 0.5) / letters.length],
-              [0.3, 1]
-            );
-            return (
-              <motion.span key={i} style={{ opacity }} className="inline-block">
-                {letter === " " ? "\u00A0" : letter}
-              </motion.span>
-            );
-          })}
-        </h1>
-        <p className="text-gray-400 text-base md:text-lg max-w-lg">
-          At Trizzone, architecture is more than building—it's about curating experiences. Our approach blends form and function through clean lines, intuitive spaces, and a deep respect for context. With a contemporary lens and minimalist soul, we design spaces that breathe, flow, and adapt—built to inspire, made to last.
-        </p>
-      </div>
-
-      {/* Right: Rotating Images */}
-      <div className="w-full md:w-1/2 h-[400px] relative overflow-hidden rounded-xl z-0 mt-10 md:mt-0">
-        <RotatingImages images={[a1, a2, a3, a4, a5]} />
+    <section ref={sectionRef} className="bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-28">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+        <div className="md:w-1/2 space-y-6 z-10">
+          <h2 className="text-5xl font-extrabold">
+            <AnimatedLetters text="Architecture" scrollYProgress={scrollYProgress} range={[0, 0.3]} />
+          </h2>
+          <p className="text-white font-medium">
+            Architecture is more than buildings; it’s about form, light, and human connection. Our approach combines functionality and timeless aesthetics to create structures that resonate with their environment and purpose.
+          </p>
+        </div>
+        <div className="md:w-1/2 h-[400px] relative rounded-xl">
+          <RotatingImages images={[a1, a2, a3, a4]} />
+        </div>
       </div>
     </section>
   );
 };
-
 export default Service3;
