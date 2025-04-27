@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-import poster from "../assets/services/poster.jpg"; // 🎯 poster background image
+import poster from "../assets/services/poster.jpg"; // 🎯 Poster background image
 
 import i1 from "../assets/services/i1.jpg";
 import i2 from "../assets/services/i2.jpg";
@@ -23,14 +23,6 @@ import p4 from "../assets/services/p4.jpg";
 import p5 from "../assets/services/p5.jpg";
 import p6 from "../assets/services/p6.jpg";
 
-// Preload images
-const preloadImages = (imageUrls) => {
-  imageUrls.forEach(url => {
-    const img = new Image();
-    img.src = url;
-  });
-};
-
 const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
   return (
@@ -39,13 +31,13 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
         const [startRange, endRange] = range;
         const start = startRange + (i / letters.length) * (endRange - startRange);
         const end = start + (0.5 / letters.length) * (endRange - startRange);
-        const opacity = useTransform(scrollYProgress, [start, end], [0.3, 1]);
-        const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
+        const opacity = useTransform(scrollYProgress, [start, end], [0.5, 1]);
+        const color = useTransform(scrollYProgress, [start, end], ["#aaaaaa", "#ffffff"]);
 
         return (
           <motion.span 
-            key={i} 
-            style={{ opacity, color }} 
+            key={i}
+            style={{ opacity, color }}
             className="inline-block will-change-transform"
           >
             {letter === " " ? "\u00A0" : letter}
@@ -58,39 +50,24 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
 
 const RotatingImages = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [nextIndex, setNextIndex] = useState(1);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const preload = async () => {
-      await Promise.all(images.map(url => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = url;
-          img.onload = resolve;
-        });
-      }));
-      setLoaded(true);
+    const preload = () => {
+      images.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
     };
     preload();
   }, [images]);
 
   useEffect(() => {
-    if (!loaded) return;
-
     const interval = setInterval(() => {
-      setCurrentIndex(nextIndex);
-      setNextIndex((nextIndex + 1) % images.length);
+      setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [nextIndex, loaded, images.length]);
-
-  if (!loaded) {
-    return (
-      <div className="absolute inset-0 bg-gray-800 rounded-xl"></div>
-    );
-  }
+  }, [images.length]);
 
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden">
@@ -99,17 +76,9 @@ const RotatingImages = ({ images }) => {
           key={index}
           src={img}
           alt="Service"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl"
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: index === currentIndex ? 1 : 0,
-            transition: { duration: 0.8 }
-          }}
-          exit={{ opacity: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: 'easeInOut'
-          }}
+          className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
+          animate={{ opacity: index === currentIndex ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
         />
       ))}
     </div>
@@ -120,20 +89,15 @@ const Service4 = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start end', 'end start']
+    offset: ["start end", "end start"],
   });
 
-  useEffect(() => {
-    preloadImages([i1, i2, i3, i4, i5, l1, l2, l3, l4, l5, l6, p1, p2, p3, p4, p5, p6, poster]);
-  }, []);
-
   return (
-    <section 
-      ref={sectionRef} 
+    <section
+      ref={sectionRef}
       className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-20 md:space-y-32 overflow-hidden"
-      style={{ transformStyle: 'preserve-3d' }}
+      style={{ transformStyle: "preserve-3d" }}
     >
-
       {/* 🎯 Interior Design Section */}
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
@@ -141,20 +105,18 @@ const Service4 = () => {
             <AnimatedLetters text="Interior Design" scrollYProgress={scrollYProgress} range={[0, 0.25]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters. From the texture of a wall to the way natural light moves through a room, we create interiors that are calm, refined, and effortlessly elegant. We believe in less—but better.
+            Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters.
+            From the texture of a wall to the way natural light moves through a room, we create interiors that
+            are calm, refined, and effortlessly elegant.
           </p>
         </div>
 
-        {/* 🎯 Outer Poster Box + Inner Rotating Images */}
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
-          {/* Poster Background */}
-          <img 
-            src={poster} 
-            alt="Poster Background" 
+          <img
+            src={poster}
+            alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
-
-          {/* Inner Rotating Box */}
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[i1, i2, i3, i4, i5]} />
           </div>
@@ -168,20 +130,18 @@ const Service4 = () => {
             <AnimatedLetters text="Landscape Architecture" scrollYProgress={scrollYProgress} range={[0.25, 0.5]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments where every element has intention—from native plant selections to subtle transitions between built and natural spaces.
+            Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments
+            where every element has intention—from native plant selections to subtle transitions between built
+            and natural spaces.
           </p>
         </div>
 
-        {/* 🎯 Outer Poster Box + Inner Rotating Images */}
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
-          {/* Poster Background */}
-          <img 
-            src={poster} 
-            alt="Poster Background" 
+          <img
+            src={poster}
+            alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
-
-          {/* Inner Rotating Box */}
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[l1, l2, l3, l4, l5, l6]} />
           </div>
@@ -195,26 +155,22 @@ const Service4 = () => {
             <AnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Precision meets design. With a streamlined project management system, Trizzone ensures every detail—from concept to completion—is handled with care, efficiency, and absolute clarity.
+            Precision meets design. With a streamlined project management system, Trizzone ensures every
+            detail—from concept to completion—is handled with care, efficiency, and absolute clarity.
           </p>
         </div>
 
-        {/* 🎯 Outer Poster Box + Inner Rotating Images */}
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
-          {/* Poster Background */}
-          <img 
-            src={poster} 
-            alt="Poster Background" 
+          <img
+            src={poster}
+            alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
-
-          {/* Inner Rotating Box */}
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[p1, p2, p3, p4, p5, p6]} />
           </div>
         </div>
       </div>
-
     </section>
   );
 };

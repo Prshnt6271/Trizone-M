@@ -12,6 +12,7 @@ const preloadImages = (imageUrls) => {
   imageUrls.forEach(url => {
     const img = new Image();
     img.src = url;
+    img.decode?.(); // decode image if supported
   });
 };
 
@@ -27,9 +28,9 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
         const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
 
         return (
-          <motion.span 
-            key={i} 
-            style={{ opacity, color }} 
+          <motion.span
+            key={i}
+            style={{ opacity, color }}
             className="inline-block will-change-transform"
           >
             {letter === " " ? "\u00A0" : letter}
@@ -42,58 +43,26 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
 
 const RotatingImages = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [nextIndex, setNextIndex] = useState(1);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const preload = async () => {
-      await Promise.all(images.map(url => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = url;
-          img.onload = resolve;
-        });
-      }));
-      setLoaded(true);
-    };
-    preload();
-  }, [images]);
-
-  useEffect(() => {
-    if (!loaded) return;
-
     const interval = setInterval(() => {
-      setCurrentIndex(nextIndex);
-      setNextIndex((nextIndex + 1) % images.length);
+      setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
-
     return () => clearInterval(interval);
-  }, [nextIndex, loaded, images.length]);
-
-  if (!loaded) {
-    return (
-      <div className="absolute inset-0 bg-gray-800 rounded-xl"></div>
-    );
-  }
+  }, [images.length]);
 
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden">
-      {/* 🎯 Rotating images inside inner box */}
       {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
           alt="Service"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl"
-          initial={{ opacity: 0 }}
-          animate={{ 
+          loading="eager"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl transition-opacity duration-1000 ease-in-out"
+          style={{
             opacity: index === currentIndex ? 1 : 0,
-            transition: { duration: 0.8 }
-          }}
-          exit={{ opacity: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: 'easeInOut'
+            transition: 'opacity 0.8s ease-in-out'
           }}
         />
       ))}
@@ -113,8 +82,8 @@ const Service3 = () => {
   }, []);
 
   return (
-    <section 
-      ref={sectionRef} 
+    <section
+      ref={sectionRef}
       className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-12 md:space-y-28 overflow-hidden"
       style={{ transformStyle: 'preserve-3d' }}
     >
@@ -128,21 +97,17 @@ const Service3 = () => {
           </p>
         </div>
 
-        {/* 🎯 Outer Poster Box */}
+        {/* Poster + Rotating Images */}
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
-          {/* Poster Background */}
           <img 
             src={poster} 
             alt="Poster Background" 
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
-
-          {/* 🎯 Inner Rotating Images Box */}
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[a1, a2, a3, a4]} />
           </div>
         </div>
-
       </div>
     </section>
   );
