@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+
 import a1 from '../assets/services/a1.jpg';
 import a2 from '../assets/services/a2.jpg';
 import a3 from '../assets/services/a3.jpg';
 import a4 from '../assets/services/a4.jpg';
+import poster from '../assets/services/poster.jpg'; // 🎯 poster image
 
 // Preload images
 const preloadImages = (imageUrls) => {
@@ -44,7 +46,6 @@ const RotatingImages = ({ images }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Preload all images on component mount
     const preload = async () => {
       await Promise.all(images.map(url => {
         return new Promise((resolve) => {
@@ -64,7 +65,7 @@ const RotatingImages = ({ images }) => {
     const interval = setInterval(() => {
       setCurrentIndex(nextIndex);
       setNextIndex((nextIndex + 1) % images.length);
-    }, 3000); // Change image every 3 seconds
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [nextIndex, loaded, images.length]);
@@ -76,13 +77,14 @@ const RotatingImages = ({ images }) => {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden z-0 rounded-xl will-change-transform">
+    <div className="relative w-full h-full rounded-xl overflow-hidden">
+      {/* 🎯 Rotating images inside inner box */}
       {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
           alt="Service"
-          className="absolute h-full w-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl"
           initial={{ opacity: 0 }}
           animate={{ 
             opacity: index === currentIndex ? 1 : 0,
@@ -107,8 +109,7 @@ const Service3 = () => {
   });
 
   useEffect(() => {
-    // Preload all images when component mounts
-    preloadImages([a1, a2, a3, a4]);
+    preloadImages([a1, a2, a3, a4, poster]);
   }, []);
 
   return (
@@ -126,9 +127,22 @@ const Service3 = () => {
             Architecture is more than buildings; it's about form, light, and human connection. Our approach combines functionality and timeless aesthetics to create structures that resonate with their environment and purpose.
           </p>
         </div>
-        <div className="w-full md:w-1/2 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl">
-          <RotatingImages images={[a1, a2, a3, a4]} />
+
+        {/* 🎯 Outer Poster Box */}
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+          {/* Poster Background */}
+          <img 
+            src={poster} 
+            alt="Poster Background" 
+            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
+          />
+
+          {/* 🎯 Inner Rotating Images Box */}
+          <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
+            <RotatingImages images={[a1, a2, a3, a4]} />
+          </div>
         </div>
+
       </div>
     </section>
   );

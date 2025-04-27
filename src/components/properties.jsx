@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+// Corrected image imports
+import i1 from "../assets/interior/i1.jpg";
+import i2 from "../assets/interior/i2.jpg";
+import i3 from "../assets/interior/i3.jpg";
+import i4 from "../assets/interior/i4.jpg";
+import i5 from "../assets/interior/i5.jpg";
+import i6 from "../assets/interior/i6.jpg";
+// 👉 Keep adding more if you have i7, i8, etc.
+
+const images = [i1, i2, i3, i4, i5, i6];
+
+// Categories
 const categories = [
   "All",
   "Residential",
@@ -11,20 +23,20 @@ const categories = [
   "World Map",
 ];
 
-// Generate 20 random image items
-const generateRandomImages = (count) =>
-  Array.from({ length: count }, (_, i) => ({
-    img: `https://picsum.photos/seed/${Math.random() * 1000}/600/400`,
-    name: `PROJECT ${i + 1}`,
-    project: "project description",
-    location: "location info",
-    year: "Year: 2025",
-    team: "Team: Trizzone",
-    link: "/",
+// Create fixed properties
+const generateFixedProperties = () =>
+  images.map((img, index) => ({
+    img,
+    name: `PROJECT ${index + 1}`,
+    project: "Project: Apartment Interior",
+    location: "Location: Essel Tower, Gurgaon, Haryana",
+    year: "Year: 2015",
+    team: "Project Type: Interior Design",
+    link: "/", // Update if you have actual links
   }));
 
 const propertiesData = categories.reduce((acc, category) => {
-  acc[category] = generateRandomImages(20);
+  acc[category] = generateFixedProperties();
   return acc;
 }, {});
 
@@ -40,7 +52,8 @@ const PropertiesPage = () => {
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col md:flex-row mt-28 p-4">
-      {/* MOBILE VIEW (Horizontal Scroll Buttons) */}
+      
+      {/* MOBILE VIEW */}
       <div className="md:hidden">
         <h2 className="text-3xl font-bold mb-4">Interiors</h2>
         <div className="flex overflow-x-auto gap-2 whitespace-nowrap pb-2">
@@ -58,7 +71,7 @@ const PropertiesPage = () => {
         </div>
       </div>
 
-      {/* DESKTOP VIEW (Sidebar Buttons) */}
+      {/* DESKTOP VIEW */}
       <div className="hidden md:flex md:w-1/4 flex-col space-y-2 p-4">
         {categories.map((category) => (
           <button

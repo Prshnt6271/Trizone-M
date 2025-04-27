@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
+import poster from "../assets/services/poster.jpg"; // 🎯 poster background image
+
 import i1 from "../assets/services/i1.jpg";
 import i2 from "../assets/services/i2.jpg";
 import i3 from "../assets/services/i3.jpg";
@@ -60,7 +62,6 @@ const RotatingImages = ({ images }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Preload all images on component mount
     const preload = async () => {
       await Promise.all(images.map(url => {
         return new Promise((resolve) => {
@@ -80,7 +81,7 @@ const RotatingImages = ({ images }) => {
     const interval = setInterval(() => {
       setCurrentIndex(nextIndex);
       setNextIndex((nextIndex + 1) % images.length);
-    }, 3000); // Change image every 3 seconds
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [nextIndex, loaded, images.length]);
@@ -92,13 +93,13 @@ const RotatingImages = ({ images }) => {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden z-0 rounded-xl will-change-transform">
+    <div className="relative w-full h-full rounded-xl overflow-hidden">
       {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
           alt="Service"
-          className="absolute h-full w-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl"
           initial={{ opacity: 0 }}
           animate={{ 
             opacity: index === currentIndex ? 1 : 0,
@@ -123,17 +124,17 @@ const Service4 = () => {
   });
 
   useEffect(() => {
-    // Preload all images when component mounts
-    preloadImages([i1, i2, i3, i4, i5, l1, l2, l3, l4, l5, l6, p1, p2, p3, p4, p5, p6]);
+    preloadImages([i1, i2, i3, i4, i5, l1, l2, l3, l4, l5, l6, p1, p2, p3, p4, p5, p6, poster]);
   }, []);
 
   return (
     <section 
       ref={sectionRef} 
-      className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-12 md:space-y-28 overflow-hidden"
+      className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-20 md:space-y-32 overflow-hidden"
       style={{ transformStyle: 'preserve-3d' }}
     >
-      {/* Interior Design */}
+
+      {/* 🎯 Interior Design Section */}
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
@@ -143,12 +144,24 @@ const Service4 = () => {
             Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters. From the texture of a wall to the way natural light moves through a room, we create interiors that are calm, refined, and effortlessly elegant. We believe in less—but better.
           </p>
         </div>
-        <div className="w-full md:w-1/2 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl">
-          <RotatingImages images={[i1, i2, i3, i4, i5]} />
+
+        {/* 🎯 Outer Poster Box + Inner Rotating Images */}
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+          {/* Poster Background */}
+          <img 
+            src={poster} 
+            alt="Poster Background" 
+            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
+          />
+
+          {/* Inner Rotating Box */}
+          <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
+            <RotatingImages images={[i1, i2, i3, i4, i5]} />
+          </div>
         </div>
       </div>
 
-      {/* Landscape Architecture */}
+      {/* 🎯 Landscape Architecture Section */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
@@ -158,12 +171,24 @@ const Service4 = () => {
             Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments where every element has intention—from native plant selections to subtle transitions between built and natural spaces.
           </p>
         </div>
-        <div className="w-full md:w-1/2 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl">
-          <RotatingImages images={[l1, l2, l3, l4, l5, l6]} />
+
+        {/* 🎯 Outer Poster Box + Inner Rotating Images */}
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+          {/* Poster Background */}
+          <img 
+            src={poster} 
+            alt="Poster Background" 
+            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
+          />
+
+          {/* Inner Rotating Box */}
+          <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
+            <RotatingImages images={[l1, l2, l3, l4, l5, l6]} />
+          </div>
         </div>
       </div>
 
-      {/* Project Management */}
+      {/* 🎯 Project Management Section */}
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
@@ -173,10 +198,23 @@ const Service4 = () => {
             Precision meets design. With a streamlined project management system, Trizzone ensures every detail—from concept to completion—is handled with care, efficiency, and absolute clarity.
           </p>
         </div>
-        <div className="w-full md:w-1/2 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl">
-          <RotatingImages images={[p1, p2, p3, p4, p5, p6]} />
+
+        {/* 🎯 Outer Poster Box + Inner Rotating Images */}
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+          {/* Poster Background */}
+          <img 
+            src={poster} 
+            alt="Poster Background" 
+            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
+          />
+
+          {/* Inner Rotating Box */}
+          <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
+            <RotatingImages images={[p1, p2, p3, p4, p5, p6]} />
+          </div>
         </div>
       </div>
+
     </section>
   );
 };

@@ -12,15 +12,14 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full bg-transparent p-5 flex justify-between items-center z-50">
-      {/* Logo */}
-      <Link to="/">
-        <img
-          src="/trizzone_logo.png"
-          alt="Logo"
-          className="h-12 w-auto"
-          style={{  filter: isPropertiesPage ? "none" : "invert(1)" }}
-        />
-      </Link>
+     <Link to="/" className="font-bold text-2xl" style={{
+  color: isPropertiesPage ? "#000" : "#fff",
+  fontFamily: "Poppins, sans-serif",
+  letterSpacing: "2px"  // Agar thoda space chahiye letters ke beech
+}}>
+  TRIZZONE
+</Link>
+
 
       {/* Burger Menu Button */}
       <button onClick={() => setMenuOpen(true)}>

@@ -94,7 +94,8 @@ const Loader = () => {
           initial={{ y: 0 }}
           animate={{ y: "-100%" }}
           transition={{ duration: 1.5, ease: "easeInOut" }}
-          className="fixed top-0 left-0 w-full h-full bg-white z-50"
+          className="fixed top-0 left-0 w-full h-f
+          ull bg-white z-50"
         />
       )}
     </div>
@@ -102,3 +103,4 @@ const Loader = () => {
 };
 
 export default Loader;
+
