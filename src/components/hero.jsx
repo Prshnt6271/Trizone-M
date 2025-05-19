@@ -10,24 +10,21 @@ function Hero() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [reverseText, setReverseText] = useState(false);
   const [showAnimation, setShowAnimation] = useState(true);
-  const [showBigText, setShowBigText] = useState(false); // Controls right-side "TRIZZONE"
+  const [showBigText, setShowBigText] = useState(false);
 
   useEffect(() => {
     if (showAnimation) {
-      // Start image transition every 3 seconds
       const interval = setInterval(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
       }, 3000);
 
-      // Start disappearing text effect after 2 seconds
       const timeout1 = setTimeout(() => {
         setReverseText(true);
       }, 2000);
 
-      // Show big "TRIZZONE" after the reverse animation completes (2.2s delay)
       const timeout2 = setTimeout(() => {
         setShowBigText(true);
-      }, 4000); // Adjust delay to sync with animation
+      }, 4000);
 
       return () => {
         clearInterval(interval);
@@ -37,9 +34,18 @@ function Hero() {
     }
   }, [showAnimation]);
 
+  const handleNavigation = (text) => {
+    if (text === "ARCHITECTURE") {
+      navigate("/arch");
+    } else if (text === "INTERIORS") {
+      navigate("/properties");
+    } else if (text === "LANDSCAPE") {
+      navigate("/landscape");
+    }
+  };
+
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-screen text-white font-bold">
-      {/* Cover Animation (Plays on Every Render) */}
       {showAnimation && (
         <motion.div
           initial={{ y: 0 }}
@@ -49,29 +55,23 @@ function Hero() {
         />
       )}
 
-      {/* Background Image */}
       <img
         src={images[currentImageIndex]}
         alt={`Slide ${currentImageIndex + 1}`}
         className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out"
       />
 
-      {/* "Trizzone" Text with Reverse Disappear Effect */}
       {showAnimation && (
-        <motion.div className="absolute text-[90px] md:text-[320px] top-[26%] left-[3%] md:top-[-4%] md:left-[8%] uppercase  font-heading">
+        <motion.div className="absolute text-[90px] md:text-[320px] top-[26%] left-[3%] md:top-[-4%] md:left-[8%] uppercase font-heading">
           {text.split("").map((char, index) => (
             <motion.span
               key={index}
               initial={{ opacity: 1 }}
               animate={{
-                opacity: reverseText ? (index === 0 ? 0 : 0) : 1,
+                opacity: reverseText ? 0 : 1,
               }}
               transition={{
-                delay: reverseText
-                  ? index === 0
-                    ? 2.2
-                    : 0.2 * (text.length - index)
-                  : 0,
+                delay: reverseText ? 0.2 * (text.length - index) : 0,
                 duration: 0.2,
               }}
             >
@@ -81,12 +81,11 @@ function Hero() {
         </motion.div>
       )}
 
-      {/* Left Side Buttons */}
       <div className="absolute right-8 md:left-12 bottom-28 md:bottom-20 flex flex-row md:space-x-4">
         {["ARCHITECTURE", "INTERIORS", "LANDSCAPE"].map((text, index) => (
           <button
             key={index}
-            onClick={() => navigate("/properties")}
+            onClick={() => handleNavigation(text)}
             className="px-3 md:px-6 py-1 md:py-2 text-white text-sm md:text-lg font-semibold font-body rounded-md hover:text-gray-400 transition duration-300"
           >
             {text}
@@ -94,7 +93,6 @@ function Hero() {
         ))}
       </div>
 
-      {/* Right Side Big "TRIZZONE" (Appears After Animation Completes) */}
       {showBigText && (
         <motion.div
           initial={{ opacity: 0, y: 50 }}

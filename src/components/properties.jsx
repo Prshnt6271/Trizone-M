@@ -1,58 +1,113 @@
+// PropertiesPage.jsx
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-// Corrected image imports
 import i1 from "../assets/interior/i1.jpg";
 import i2 from "../assets/interior/i2.jpg";
 import i3 from "../assets/interior/i3.jpg";
 import i4 from "../assets/interior/i4.jpg";
 import i5 from "../assets/interior/i5.jpg";
 import i6 from "../assets/interior/i6.jpg";
-// 👉 Keep adding more if you have i7, i8, etc.
 
-const images = [i1, i2, i3, i4, i5, i6];
-
-// Categories
 const categories = [
   "All",
   "Residential",
   "Commercial",
   "Houses",
-  "Hospitality",
-  "Thumbnails",
-  "World Map",
+  "Architecture",
+  "Interior",
+  "Landscape",
 ];
 
-// Create fixed properties
-const generateFixedProperties = () =>
-  images.map((img, index) => ({
-    img,
-    name: `PROJECT ${index + 1}`,
+const projects = [
+  {
+    img: i1,
+    name: "Essel Tower Apartment",
     project: "Project: Apartment Interior",
     location: "Location: Essel Tower, Gurgaon, Haryana",
     year: "Year: 2015",
-    team: "Project Type: Interior Design",
-    link: "/", // Update if you have actual links
-  }));
+    team: "Team: Interior Design Studio",
+    category: "Interior",
+  },
+  {
+    img: i2,
+    name: "MGI Office Interior",
+    project: "Project: Corporate Office Interior",
+    location: "Location: Jasola, New Delhi",
+    year: "Year: 2018",
+    team: "Team: Trizzone Design Studio",
+    category: "Interior",
+  },
+  {
+    img: i3,
+    name: "Palm Residency Villas",
+    project: "Project: Villa Interiors",
+    location: "Location: Sector 66, Gurgaon",
+    year: "Year: 2020",
+    team: "Team: Luxe Interiors",
+    category: "Interior",
+  },
+  {
+    img: i4,
+    name: "The Grand Hotel Lounge",
+    project: "Project: Hotel Lounge Design",
+    location: "Location: Aerocity, New Delhi",
+    year: "Year: 2019",
+    team: "Team: Grand Design Team",
+    category: "Interior",
+  },
+  {
+    img: i5,
+    name: "Thumbnail Project One",
+    project: "Project: Sample Interior",
+    location: "Location: Mumbai",
+    year: "Year: 2021",
+    team: "Team: Thumbnail Designers",
+    category: "Thumbnails",
+  },
+  {
+    img: i6,
+    name: "World Map Theme Interior",
+    project: "Project: Themed Office",
+    location: "Location: Cyber City, Gurgaon",
+    year: "Year: 2017",
+    team: "Team: Map Studios",
+    category: "World Map",
+  },
+];
 
 const propertiesData = categories.reduce((acc, category) => {
-  acc[category] = generateFixedProperties();
+  acc[category] =
+    category === "All"
+      ? projects
+      : projects.filter((project) => project.category === category);
   return acc;
 }, {});
 
 const PropertiesPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsVisible(true);
-    }, 200);
+    setTimeout(() => setIsVisible(true), 200);
   }, []);
+
+  const handleCategoryClick = (category) => {
+    if (category === "Architecture") {
+      navigate("/arch");
+    } else {
+      // if clicking Interior (or any other), ensure you're on /properties
+      if (category === "Interior" && location.pathname !== "/properties") {
+        navigate("/properties");
+      }
+      setSelectedCategory(category);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col md:flex-row mt-28 p-4">
-      
       {/* MOBILE VIEW */}
       <div className="md:hidden">
         <h2 className="text-3xl font-bold mb-4">Interiors</h2>
@@ -60,7 +115,7 @@ const PropertiesPage = () => {
           {categories.map((category) => (
             <button
               key={category}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategoryClick(category)}
               className={`text-sm px-4 py-2 rounded-lg ${
                 selectedCategory === category ? "text-black font-bold" : "text-gray-400"
               } hover:text-black`}
@@ -76,7 +131,7 @@ const PropertiesPage = () => {
         {categories.map((category) => (
           <button
             key={category}
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => handleCategoryClick(category)}
             className={`text-left p-2 rounded-lg text-gray-400 text-sm hover:text-black ${
               selectedCategory === category ? "text-black font-bold" : ""
             }`}
@@ -93,10 +148,14 @@ const PropertiesPage = () => {
         }`}
       >
         <h2 className="hidden md:block text-3xl font-bold mb-4">INTERIORS</h2>
-
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-          {propertiesData[selectedCategory]?.map((property, index) => (
-            <Link to={property.link} rel="noopener noreferrer" key={index}>
+          {propertiesData[selectedCategory]?.map((property, idx) => (
+            <Link
+              key={idx}
+              to={`/interior/${property.name.replace(/\s+/g, "-").toLowerCase()}`}
+              state={{ projectName: property.name }}
+              rel="noopener noreferrer"
+            >
               <div className="group cursor-pointer overflow-hidden">
                 <div className="h-[150px]">
                   <img
