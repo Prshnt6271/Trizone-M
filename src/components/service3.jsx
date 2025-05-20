@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-import a1 from '../assets/services/a1.jpg';
-import a2 from '../assets/services/a2.jpg';
-import a3 from '../assets/services/a3.jpg';
-import a4 from '../assets/services/a4.jpg';
-import poster from '../assets/services/poster.jpg'; // 🎯 poster image
+import a1 from '../assets/services/a1.webp';
+import a2 from '../assets/services/a2.webp';
+import a3 from '../assets/services/a3.webp';
+// import a4 from '../assets/services/a4.jpg';
+import poster from '../assets/services/poster.webp'; // 🎯 poster image
 
 // Preload images
 const preloadImages = (imageUrls) => {
@@ -78,7 +78,7 @@ const Service3 = () => {
   });
 
   useEffect(() => {
-    preloadImages([a1, a2, a3, a4, poster]);
+    preloadImages([a1, a2, a3, poster]);
   }, []);
 
   return (
@@ -105,7 +105,7 @@ const Service3 = () => {
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
           <div className="relative w-[85%] h-[85%] overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={[a1, a2, a3, a4]} />
+            <RotatingImages images={[a1, a2, a3]} />
           </div>
         </div>
       </div>

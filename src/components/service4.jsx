@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-import poster from "../assets/services/poster.jpg"; // 🎯 Poster background image
+import poster from "../assets/services/poster.webp"; // 🎯 Poster background image
 
 import i1 from "../assets/services/i1.jpg";
 import i2 from "../assets/services/i2.jpg";
