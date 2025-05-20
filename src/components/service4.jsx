@@ -1,10 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
 
-// Import all images
-import poster from "../assets/services/poster.jpg";
+import poster from "../assets/services/poster.jpg"; // 🎯 Poster background image
 
 import i1 from "../assets/services/i1.jpg";
 import i2 from "../assets/services/i2.jpg";
@@ -55,6 +52,16 @@ const RotatingImages = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    const preload = () => {
+      images.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    };
+    preload();
+  }, [images]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
@@ -65,20 +72,14 @@ const RotatingImages = ({ images }) => {
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden">
       {images.map((img, index) => (
-        <motion.div
+        <motion.img
           key={index}
-          className="absolute inset-0 w-full h-full"
+          src={img}
+          alt="Service"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
           animate={{ opacity: index === currentIndex ? 1 : 0 }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
-        >
-          <LazyLoadImage
-            src={img}
-            alt="Service"
-            effect="blur"
-            className="w-full h-full object-cover rounded-xl will-change-transform"
-            wrapperClassName="w-full h-full"
-          />
-        </motion.div>
+        />
       ))}
     </div>
   );
@@ -111,12 +112,10 @@ const Service4 = () => {
         </div>
 
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
-          <LazyLoadImage
+          <img
             src={poster}
             alt="Poster Background"
-            effect="blur"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            wrapperClassName="absolute inset-0"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[i1, i2, i3, i4, i5]} />
@@ -138,12 +137,10 @@ const Service4 = () => {
         </div>
 
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
-          <LazyLoadImage
+          <img
             src={poster}
             alt="Poster Background"
-            effect="blur"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            wrapperClassName="absolute inset-0"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[l1, l2, l3, l4, l5, l6]} />
@@ -163,13 +160,11 @@ const Service4 = () => {
           </p>
         </div>
 
-        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
-          <LazyLoadImage
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px]  overflow-hidden flex items-center justify-center bg-gray-900">
+          <img
             src={poster}
             alt="Poster Background"
-            effect="blur"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            wrapperClassName="absolute inset-0"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[p1, p2, p3, p4, p5, p6]} />
