@@ -17,7 +17,7 @@ const Service = () => {
     <div className="bg-[#1b1b1b]">
       <Suspense fallback={<Loading />}>
         <Service1 />
-        <Service3 />
+        {/* <Service3 /> */}
         <Service4 />
         <Service6 />
       </Suspense>
