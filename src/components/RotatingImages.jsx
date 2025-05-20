@@ -1,30 +1,59 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-const RotatingImages = ({ images, interval = 3000 }) => {
-  const [current, setCurrent] = useState(0);
+export const RotatingImages = ({ images }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, interval);
-    return () => clearInterval(timer);
-  }, [images.length, interval]);
+    // Preload images
+    const preload = async () => {
+      await Promise.all(
+        images.map(src => 
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = resolve;
+          })
+        )
+      );
+      setLoaded(true);
+    };
+
+    preload();
+  }, [images]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % images.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [loaded, images.length]);
 
   return (
-    <div className="absolute inset-0 bg-[#1b1b1b] overflow-hidden z-0 rounded-xl">
-      {images.map((img, index) => (
-        <img
-          key={index}
-          src={img}
-          alt="Rotating"
-          className={`absolute h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
-            index === current ? "opacity-100" : "opacity-0"
-          }`}
-          style={{ transition: "opacity 1s ease-in-out" }}
-        />
-      ))}
+    <div className="relative w-full h-full rounded-xl overflow-hidden">
+      {loaded ? (
+        images.map((img, index) => (
+          <motion.img
+            key={index}
+            src={img}
+            alt="Service"
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover rounded-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: index === currentIndex ? 1 : 0 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+          />
+        ))
+      ) : (
+        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+          <div className="animate-pulse text-gray-500">Loading...</div>
+        </div>
+      )}
     </div>
   );
 };
-
-export default RotatingImages;
