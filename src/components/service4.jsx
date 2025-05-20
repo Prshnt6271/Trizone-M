@@ -6,22 +6,22 @@ import poster from "../assets/services/poster.webp"; // 🎯 Poster background i
 import i1 from "../assets/services/i1.webp";
 import i2 from "../assets/services/i2.webp";
 import i3 from "../assets/services/i3.webp";
-import i4 from "../assets/services/i4.jpg";
-import i5 from "../assets/services/i5.jpg";
+// import i4 from "../assets/services/i4.jpg";
+// import i5 from "../assets/services/i5.jpg";
 
 import l1 from "../assets/services/l1.webp";
 import l2 from "../assets/services/l2.webp";
 import l3 from "../assets/services/l3.jpg";
-import l4 from "../assets/services/l4.jpg";
-import l5 from "../assets/services/l5.jpg";
-import l6 from "../assets/services/l6.jpg";
+// import l4 from "../assets/services/l4.jpg";
+// import l5 from "../assets/services/l5.jpg";
+// import l6 from "../assets/services/l6.jpg";
 
 import p1 from "../assets/services/p1.webp";
 import p2 from "../assets/services/p2.webp";
 import p3 from "../assets/services/p3.webp";
-import p4 from "../assets/services/p4.jpg";
-import p5 from "../assets/services/p5.jpg";
-import p6 from "../assets/services/p6.jpg";
+// import p4 from "../assets/services/p4.jpg";
+// import p5 from "../assets/services/p5.jpg";
+// import p6 from "../assets/services/p6.jpg";
 
 const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
@@ -118,7 +118,7 @@ const Service4 = () => {
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={[i1, i2, i3, i4, i5]} />
+            <RotatingImages images={[i1, i2, i3]} />
           </div>
         </div>
       </div>
@@ -143,7 +143,7 @@ const Service4 = () => {
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={[l1, l2, l3, l4, l5, l6]} />
+            <RotatingImages images={[l1, l2, l3]} />
           </div>
         </div>
       </div>
@@ -167,7 +167,7 @@ const Service4 = () => {
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={[p1, p2, p3, p4, p5, p6]} />
+            <RotatingImages images={[p1, p2, p3]} />
           </div>
         </div>
       </div>
