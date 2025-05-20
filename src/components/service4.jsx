@@ -3,22 +3,22 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 
 import poster from "../assets/services/poster.webp"; // 🎯 Poster background image
 
-import i1 from "../assets/services/i1.jpg";
-import i2 from "../assets/services/i2.jpg";
-import i3 from "../assets/services/i3.jpg";
+import i1 from "../assets/services/i1.webp";
+import i2 from "../assets/services/i2.webp";
+import i3 from "../assets/services/i3.webp";
 import i4 from "../assets/services/i4.jpg";
 import i5 from "../assets/services/i5.jpg";
 
-import l1 from "../assets/services/l1.jpg";
-import l2 from "../assets/services/l2.jpg";
+import l1 from "../assets/services/l1.webp";
+import l2 from "../assets/services/l2.webp";
 import l3 from "../assets/services/l3.jpg";
 import l4 from "../assets/services/l4.jpg";
 import l5 from "../assets/services/l5.jpg";
 import l6 from "../assets/services/l6.jpg";
 
-import p1 from "../assets/services/p1.jpg";
-import p2 from "../assets/services/p2.jpg";
-import p3 from "../assets/services/p3.jpg";
+import p1 from "../assets/services/p1.webp";
+import p2 from "../assets/services/p2.webp";
+import p3 from "../assets/services/p3.webp";
 import p4 from "../assets/services/p4.jpg";
 import p5 from "../assets/services/p5.jpg";
 import p6 from "../assets/services/p6.jpg";
