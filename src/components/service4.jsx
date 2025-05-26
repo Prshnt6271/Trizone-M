@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useScroll } from 'framer-motion';
-import AnimatedLetters from './services/AnimatedLetters';
-import RotatingImages from './services/RotatingImages';
+import AnimatedLetters from './AnimatedLetters';
+import RotatingImages from './RotatingImages';
 
 import poster from "../assets/services/poster.webp";
 import i1 from "../assets/services/i1.webp";
