@@ -1,15 +1,22 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-// Optimized image imports - Ensure these are smaller for mobile!
-// If you have different sizes for desktop/mobile, use a solution like Netlify Image CDN, Cloudinary, or manual responsive images.
-// For now, assume these WEBP images are already reasonably optimized for web.
-import a1 from '../assets/services/a1.webp';
-import a2 from '../assets/services/a2.webp';
-import a3 from '../assets/services/a3.webp';
-import poster from '../assets/services/poster.webp';
+// Import desktop images
+import a1_desktop from '../assets/services/a1.webp';
+import a2_desktop from '../assets/services/a2.webp';
+import a3_desktop from '../assets/services/a3.webp';
+import poster_desktop from '../assets/services/poster.webp';
 
-// Custom hook for image preloading
+// Import mobile images (YOU MUST CREATE THESE SMALLER VERSIONS)
+import a1_mobile from '../assets/services/mobile/a1-mobile.webp';
+import a2_mobile from '../assets/services/mobile/a2-mobile.webp';
+import a3_mobile from '../assets/services/mobile/a3-mobile.webp';
+import poster_mobile from '../assets/services/mobile/poster-mobile.webp'; // 🎯 poster image for mobile
+
+// Custom hook for responsive image loading
+import useResponsiveImage from '../hooks/useResponsiveImage';
+
+// Custom hook for image preloading (optimized with decode)
 const useImagePreloader = (imageList) => {
   useEffect(() => {
     const preloadImages = async () => {
@@ -18,9 +25,8 @@ const useImagePreloader = (imageList) => {
           new Promise((resolve) => {
             const img = new Image();
             img.src = src;
-            // Using decode() for better performance on some browsers
             img.onload = () => { img.decode().finally(resolve); };
-            img.onerror = resolve; // Don't block if one fails
+            img.onerror = resolve;
           })
         )
       );
@@ -29,25 +35,21 @@ const useImagePreloader = (imageList) => {
   }, [imageList]);
 };
 
-// Memoize AnimatedLetters for performance
+// AnimatedLetters (no changes needed, it's already optimized)
 const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
   return (
     <>
       {letters.map((letter, i) => {
         const [startRange, endRange] = range;
-        // Adjust these values to control when the animation starts/ends relative to the scroll range
         const start = startRange + (i / letters.length) * (endRange - startRange);
         const end = start + (0.5 / letters.length) * (endRange - startRange);
-
-        // useTransform is performant for direct style changes
         const opacity = useTransform(scrollYProgress, [start, end], [0.3, 1]);
         const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
 
         return (
           <motion.span
             key={i}
-            // Apply styles directly to minimize DOM updates
             style={{ opacity, color }}
             className="inline-block will-change-transform"
           >
@@ -59,16 +61,19 @@ const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] })
   );
 });
 
-// Memoize RotatingImages for performance
-const RotatingImages = React.memo(({ images }) => {
+// RotatingImages (updated to use responsive images and preloading)
+const RotatingImages = React.memo(({ desktopImages, mobileImages }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
+
+  // Determine current image set based on screen width
+  const currentImageSet = window.innerWidth < 768 ? mobileImages : desktopImages;
 
   // Preload internal images for this component once
   useEffect(() => {
     const preload = async () => {
       await Promise.all(
-        images.map(src =>
+        currentImageSet.map(src =>
           new Promise((resolve) => {
             const img = new Image();
             img.src = src;
@@ -80,34 +85,19 @@ const RotatingImages = React.memo(({ images }) => {
       setLoaded(true);
     };
     preload();
-  }, [images]);
+  }, [currentImageSet]); // Dependency on currentImageSet to re-preload if screen size changes
 
   useEffect(() => {
-    if (!loaded) return; // Only start interval if images are loaded
+    if (!loaded) return;
     const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % images.length);
+      setCurrentIndex(prev => (prev + 1) % currentImageSet.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [images.length, loaded]);
+  }, [currentImageSet.length, loaded]);
 
   if (!loaded) {
     return (
       <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center">
-        {/* Simple inline spinner for quick feedback */}
-        <style jsx>{`
-          .spinner-small {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #fff;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-          }
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
         <div className="spinner-small"></div>
       </div>
     );
@@ -115,13 +105,13 @@ const RotatingImages = React.memo(({ images }) => {
 
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden">
-      {images.map((img, index) => (
+      {currentImageSet.map((img, index) => (
         <motion.img
           key={index}
           src={img}
           alt="Service"
-          // Eager loading for the currently visible image, lazy for others
-          loading={index === currentIndex ? "eager" : "lazy"}
+          // Eager load the first image, lazy load others
+          loading={index === 0 ? "eager" : "lazy"}
           className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
           initial={{ opacity: 0 }}
           animate={{ opacity: index === currentIndex ? 1 : 0 }}
@@ -136,12 +126,19 @@ const Service3 = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start end', 'end start'] // Tracks scroll progress when element enters/leaves viewport
+    offset: ['start end', 'end start']
   });
 
-  // Preload all critical images for this component *early*
-  // This hook ensures all these images are in cache before the component renders fully
-  useImagePreloader([a1, a2, a3, poster]);
+  // Use the responsive image hook for the poster
+  const posterSrc = useResponsiveImage(poster_desktop, poster_mobile);
+
+  // Preload all desktop and mobile images for this component when it mounts
+  // This ensures they are in cache before the component even needs to display them.
+  useImagePreloader([
+    poster_desktop, poster_mobile,
+    a1_desktop, a2_desktop, a3_desktop,
+    a1_mobile, a2_mobile, a3_mobile
+  ]);
 
   return (
     <section
@@ -158,16 +155,18 @@ const Service3 = () => {
           </p>
         </div>
 
-        {/* Poster + Rotating Images */}
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
           <img
-            src={poster}
+            src={posterSrc} {/* Use the responsive poster source */}
             alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            loading="eager" // Keep eager for poster as it's the background
+            loading="eager" // Keep eager for poster as it's a critical background
           />
           <div className="relative w-[85%] h-[85%] overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={[a1, a2, a3]} />
+            <RotatingImages
+              desktopImages={[a1_desktop, a2_desktop, a3_desktop]}
+              mobileImages={[a1_mobile, a2_mobile, a3_mobile]}
+            />
           </div>
         </div>
       </div>
@@ -175,4 +174,4 @@ const Service3 = () => {
   );
 };
 
-export default React.memo(Service3); // Export with capital S for convention
+export default React.memo(Service3);

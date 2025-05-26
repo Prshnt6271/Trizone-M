@@ -1,26 +1,26 @@
-import React, { useRef, useState, useEffect, lazy, Suspense } from 'react';
-// No need for motion, useScroll, useTransform here as they are used in child components
+import React, { lazy, Suspense } from 'react';
 
-// Optimized image imports - these are handled by the components themselves now
-// const poster = "/optimized/poster.webp"; // This line is not needed here anymore
-
-// Lazy imports for components
 const Service1 = lazy(() => import('../components/service1'));
 const Service3 = lazy(() => import('../components/service3'));
 const Service4 = lazy(() => import('../components/service4'));
-const Service6 = lazy(() => import('../components/service6')); // Assuming this component also exists
+const Service6 = lazy(() => import('../components/service6'));
 
 const LoadingPlaceholder = () => (
   <div className="min-h-[80vh] flex items-center justify-center bg-[#1b1b1b]">
-    {/* Simple inline spinner for quick feedback */}
     <style jsx>{`
-      .spinner {
-        border: 6px solid rgba(255, 255, 255, 0.3);
-        border-top: 6px solid #fff;
+      .spinner, .spinner-small {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #fff;
         border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      .spinner {
         width: 50px;
         height: 50px;
-        animation: spin 1s linear infinite;
+      }
+      .spinner-small {
+        width: 30px;
+        height: 30px;
       }
       @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -31,7 +31,7 @@ const LoadingPlaceholder = () => (
   </div>
 );
 
-const ServicePage = () => { // Renamed to ServicePage for clarity
+const ServicePage = () => {
   return (
     <div className="bg-[#1b1b1b]">
       <Suspense fallback={<LoadingPlaceholder />}>
