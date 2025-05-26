@@ -23,7 +23,7 @@ const service = () => {
       <Suspense fallback={<LoadingPlaceholder />}>
         <Service1 />
         <Service3 />
-        <Service4 />
+        {/* <Service4 /> */}
         <Service6 />
       </Suspense>
     </div>
