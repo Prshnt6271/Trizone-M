@@ -1,41 +1,31 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-// Import desktop images
-import a1_desktop from '../assets/services/a1.webp';
-import a2_desktop from '../assets/services/a2.webp';
-import a3_desktop from '../assets/services/a3.webp';
-import poster_desktop from '../assets/services/poster.webp';
+import a1 from '../assets/services/a1.webp';
+import a2 from '../assets/services/a2.webp';
+import a3 from '../assets/services/a3.webp';
+// import a4 from '../assets/services/a4.jpg';
+import poster from '../assets/services/poster.webp'; // 🎯 poster image
 
-// Import mobile images (YOU MUST CREATE THESE SMALLER VERSIONS)
-import a1_mobile from '../assets/services/mobile/a1-mobile.webp';
-import a2_mobile from '../assets/services/mobile/a2-mobile.webp';
-import a3_mobile from '../assets/services/mobile/a3-mobile.webp';
-import poster_mobile from '../assets/services/mobile/poster-mobile.webp'; // 🎯 poster image for mobile
-
-// Custom hook for responsive image loading
-import useResponsiveImage from '../hooks/useResponsiveImage';
-
-// Custom hook for image preloading (optimized with decode)
+// Custom hook for image preloading
 const useImagePreloader = (imageList) => {
   useEffect(() => {
-    const preloadImages = async () => {
+    const preload = async () => {
       await Promise.all(
-        imageList.map(src =>
+        imageList.map(src => 
           new Promise((resolve) => {
             const img = new Image();
             img.src = src;
-            img.onload = () => { img.decode().finally(resolve); };
-            img.onerror = resolve;
+            img.onload = resolve;
+            img.onerror = resolve; // Don't block if one fails
           })
         )
       );
     };
-    preloadImages();
+    preload();
   }, [imageList]);
 };
 
-// AnimatedLetters (no changes needed, it's already optimized)
 const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
   return (
@@ -61,39 +51,33 @@ const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] })
   );
 });
 
-// RotatingImages (updated to use responsive images and preloading)
-const RotatingImages = React.memo(({ desktopImages, mobileImages }) => {
+const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
-  // Determine current image set based on screen width
-  const currentImageSet = window.innerWidth < 768 ? mobileImages : desktopImages;
-
-  // Preload internal images for this component once
   useEffect(() => {
     const preload = async () => {
       await Promise.all(
-        currentImageSet.map(src =>
+        images.map(src => 
           new Promise((resolve) => {
             const img = new Image();
             img.src = src;
-            img.onload = () => { img.decode().finally(resolve); };
-            img.onerror = resolve;
+            img.onload = resolve;
           })
         )
       );
       setLoaded(true);
     };
     preload();
-  }, [currentImageSet]); // Dependency on currentImageSet to re-preload if screen size changes
+  }, [images]);
 
   useEffect(() => {
     if (!loaded) return;
     const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % currentImageSet.length);
+      setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [currentImageSet.length, loaded]);
+  }, [images.length, loaded]);
 
   if (!loaded) {
     return (
@@ -105,13 +89,12 @@ const RotatingImages = React.memo(({ desktopImages, mobileImages }) => {
 
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden">
-      {currentImageSet.map((img, index) => (
+      {images.map((img, index) => (
         <motion.img
           key={index}
           src={img}
           alt="Service"
-          // Eager load the first image, lazy load others
-          loading={index === 0 ? "eager" : "lazy"}
+          loading="lazy"
           className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
           initial={{ opacity: 0 }}
           animate={{ opacity: index === currentIndex ? 1 : 0 }}
@@ -122,23 +105,15 @@ const RotatingImages = React.memo(({ desktopImages, mobileImages }) => {
   );
 });
 
-const Service3 = () => {
+const service3 = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start']
   });
 
-  // Use the responsive image hook for the poster
-  const posterSrc = useResponsiveImage(poster_desktop, poster_mobile);
-
-  // Preload all desktop and mobile images for this component when it mounts
-  // This ensures they are in cache before the component even needs to display them.
-  useImagePreloader([
-    poster_desktop, poster_mobile,
-    a1_desktop, a2_desktop, a3_desktop,
-    a1_mobile, a2_mobile, a3_mobile
-  ]);
+  // Preload all images for this component
+  useImagePreloader([a1, a2, a3, poster]);
 
   return (
     <section
@@ -155,18 +130,16 @@ const Service3 = () => {
           </p>
         </div>
 
+        {/* Poster + Rotating Images */}
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
-          <img
-            src={posterSrc} {/* Use the responsive poster source */}
-            alt="Poster Background"
+          <img 
+            src={poster} 
+            alt="Poster Background" 
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            loading="eager" // Keep eager for poster as it's a critical background
+            loading="eager"
           />
           <div className="relative w-[85%] h-[85%] overflow-hidden z-10 shadow-lg">
-            <RotatingImages
-              desktopImages={[a1_desktop, a2_desktop, a3_desktop]}
-              mobileImages={[a1_mobile, a2_mobile, a3_mobile]}
-            />
+            <RotatingImages images={[a1, a2, a3]} />
           </div>
         </div>
       </div>
@@ -174,4 +147,4 @@ const Service3 = () => {
   );
 };
 
-export default React.memo(Service3);
+export default React.memo(service3);
