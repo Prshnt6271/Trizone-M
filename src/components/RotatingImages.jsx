@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import ImageLoader from './ImageLoader';
 
 const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-    const preload = async () => {
+    const preloadImages = async () => {
       await Promise.all(
         images.map(src => 
           new Promise((resolve) => {
             const img = new Image();
             img.src = src;
-            img.onload = () => mounted && resolve();
-            img.onerror = () => mounted && resolve();
+            img.onload = resolve;
+            img.onerror = resolve;
           })
         )
       );
-      if (mounted) setLoaded(true);
+      setLoaded(true);
     };
-    preload();
-    
-    return () => {
-      mounted = false;
-    };
+
+    preloadImages();
   }, [images]);
 
   useEffect(() => {
@@ -47,16 +44,20 @@ const RotatingImages = React.memo(({ images }) => {
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden">
       {images.map((img, index) => (
-        <motion.img
+        <motion.div
           key={index}
-          src={img}
-          alt="Service"
-          loading="eager"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
+          className="absolute inset-0 w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: index === currentIndex ? 1 : 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-        />
+        >
+          <ImageLoader
+            src={img}
+            alt="Service"
+            className="w-full h-full object-cover"
+            priority={index === 0}
+          />
+        </motion.div>
       ))}
     </div>
   );
