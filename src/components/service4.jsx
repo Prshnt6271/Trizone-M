@@ -1,66 +1,43 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
+// Optimized static image imports
 import poster from "../assets/services/poster.webp";
 
+// Optimized specific image imports
 import i1 from "../assets/services/i1.webp";
 import i2 from "../assets/services/i2.webp";
 import i3 from "../assets/services/i3.webp";
+
+import l1 from "../assets/services/l1.webp";
+import l2 from "../assets/services/l2.webp";
+import l3 from "../assets/services/l3.jpg"; // Check if this can be .webp for better performance
 
 import p1 from "../assets/services/p1.webp";
 import p2 from "../assets/services/p2.webp";
 import p3 from "../assets/services/p3.webp";
 
-// Optional preloading function
-const useImagePreloader = (images) => {
+// Preload hook - Enhanced with decode()
+const useImagePreloader = (imageList) => {
   useEffect(() => {
-    images.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, [images]);
+    const preloadImages = async () => {
+      await Promise.all(
+        imageList.map(src =>
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => { img.decode().finally(resolve); }; // Use decode() for better performance
+            img.onerror = resolve;
+          })
+        )
+      );
+    };
+    preloadImages();
+  }, [imageList]);
 };
 
-const useMobileOptimizations = (isMobile) => {
-  const shouldReduceMotion = useReducedMotion();
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef();
-
-  useEffect(() => {
-    if (!isMobile) {
-      setIsVisible(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [isMobile]);
-
-  return { shouldReduceMotion, isVisible, ref };
-};
-
-const MobileAnimatedLetters = React.memo(({ text, isMobile }) => {
-  const [visible, setVisible] = useState(!isMobile);
-
-  useEffect(() => {
-    if (!isMobile) return;
-    const timeout = setTimeout(() => setVisible(true), 100);
-    return () => clearTimeout(timeout);
-  }, [isMobile]);
-
-  return (
-    <span className={`inline-block transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
-      {text}
-    </span>
-  );
-});
-
-const DesktopAnimatedLetters = React.memo(({ text, scrollYProgress, range }) => {
+// Memoize AnimatedLetters for performance
+const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
   return (
     <>
@@ -68,6 +45,7 @@ const DesktopAnimatedLetters = React.memo(({ text, scrollYProgress, range }) => 
         const [startRange, endRange] = range;
         const start = startRange + (i / letters.length) * (endRange - startRange);
         const end = start + (0.5 / letters.length) * (endRange - startRange);
+
         const opacity = useTransform(scrollYProgress, [start, end], [0.5, 1]);
         const color = useTransform(scrollYProgress, [start, end], ["#aaaaaa", "#ffffff"]);
 
@@ -85,11 +63,12 @@ const DesktopAnimatedLetters = React.memo(({ text, scrollYProgress, range }) => 
   );
 });
 
-const RotatingImages = React.memo(({ images, isMobile }) => {
+// Memoize RotatingImages for performance
+const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const shouldReduceMotion = useReducedMotion();
 
+  // Preload internal images for this component once
   useEffect(() => {
     const preload = async () => {
       await Promise.all(
@@ -97,7 +76,7 @@ const RotatingImages = React.memo(({ images, isMobile }) => {
           new Promise((resolve) => {
             const img = new Image();
             img.src = src;
-            img.onload = resolve;
+            img.onload = () => { img.decode().finally(resolve); };
             img.onerror = resolve;
           })
         )
@@ -108,29 +87,34 @@ const RotatingImages = React.memo(({ images, isMobile }) => {
   }, [images]);
 
   useEffect(() => {
-    if (!loaded || shouldReduceMotion || isMobile) return;
+    if (!loaded) return; // Only start interval if images are loaded
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
+
     return () => clearInterval(interval);
-  }, [images.length, loaded, shouldReduceMotion, isMobile]);
+  }, [images.length, loaded]);
 
   if (!loaded) {
     return (
       <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        {/* Simple inline spinner for quick feedback */}
+        <style jsx>{`
+          .spinner-small {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <div className="spinner-small"></div>
       </div>
-    );
-  }
-
-  if (isMobile || shouldReduceMotion) {
-    return (
-      <img
-        src={images[0]}
-        alt="Service"
-        loading="lazy"
-        className="w-full h-full object-cover rounded-xl"
-      />
     );
   }
 
@@ -141,7 +125,8 @@ const RotatingImages = React.memo(({ images, isMobile }) => {
           key={index}
           src={img}
           alt="Service"
-          loading="lazy"
+          // Eager loading for the currently visible image, lazy for others
+          loading={index === currentIndex ? "eager" : "lazy"}
           className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
           initial={{ opacity: 0 }}
           animate={{ opacity: index === currentIndex ? 1 : 0 }}
@@ -152,19 +137,19 @@ const RotatingImages = React.memo(({ images, isMobile }) => {
   );
 });
 
-const Service4 = ({ isMobile }) => {
+const Service4 = () => { // Export with capital S for convention
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
-  const { shouldReduceMotion, isVisible, ref } = useMobileOptimizations(isMobile);
 
-  useImagePreloader([poster, i1, i2, i3, p1, p2, p3]);
-
-  if (!isVisible && isMobile) {
-    return <div ref={ref} className="h-[1px]"></div>;
-  }
+  // Preload all critical images for this component *early*
+  useImagePreloader([
+    poster, i1, i2, i3,
+    l1, l2, l3,
+    p1, p2, p3
+  ]);
 
   return (
     <section
@@ -175,14 +160,12 @@ const Service4 = ({ isMobile }) => {
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            {isMobile || shouldReduceMotion ? (
-              <MobileAnimatedLetters text="Interior Design" isMobile={isMobile} />
-            ) : (
-              <DesktopAnimatedLetters text="Interior Design" scrollYProgress={scrollYProgress} range={[0, 0.25]} />
-            )}
+            <AnimatedLetters text="Interior Design" scrollYProgress={scrollYProgress} range={[0, 0.25]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Our interior design philosophy is rooted in simplicity, light, and purpose...
+            Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters.
+            From the texture of a wall to the way natural light moves through a room, we create interiors that
+            are calm, refined, and effortlessly elegant.
           </p>
         </div>
 
@@ -191,39 +174,61 @@ const Service4 = ({ isMobile }) => {
             src={poster}
             alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            loading={isMobile ? "eager" : "lazy"}
+            loading="eager"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={[i1, i2, i3]} isMobile={isMobile} />
+            <RotatingImages images={[i1, i2, i3]} />
+          </div>
+        </div>
+      </div>
+
+      {/* Landscape Architecture Section */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
+        <div className="w-full md:w-1/2 space-y-6 z-10">
+          <h2 className="text-4xl md:text-5xl font-extrabold">
+            <AnimatedLetters text="Landscape Architecture" scrollYProgress={scrollYProgress} range={[0.25, 0.5]} />
+          </h2>
+          <p className="text-white font-medium text-base md:text-lg">
+            Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments
+            where every element has intention—from native plant selections to subtle transitions between built
+            and natural spaces.
+          </p>
+        </div>
+
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
+          <img
+            src={poster}
+            alt="Poster Background"
+            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
+            loading="eager"
+          />
+          <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
+            <RotatingImages images={[l1, l2, l3]} />
           </div>
         </div>
       </div>
 
       {/* Project Management Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
+      <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            {isMobile || shouldReduceMotion ? (
-              <MobileAnimatedLetters text="Project Management" isMobile={isMobile} />
-            ) : (
-              <DesktopAnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
-            )}
+            <AnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-           Precision meets design. With a streamlined project management system, Trizzone ensures every
+            Precision meets design. With a streamlined project management system, Trizzone ensures every
             detail—from concept to completion—is handled with care, efficiency, and absolute clarity.
           </p>
         </div>
 
-        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
           <img
             src={poster}
             alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            loading={isMobile ? "eager" : "lazy"}
+            loading="eager"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={[p1, p2, p3]} isMobile={isMobile} />
+            <RotatingImages images={[p1, p2, p3]} />
           </div>
         </div>
       </div>
