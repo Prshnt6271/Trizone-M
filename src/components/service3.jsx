@@ -7,16 +7,26 @@ import a3 from '../assets/services/a3.webp';
 // import a4 from '../assets/services/a4.jpg';
 import poster from '../assets/services/poster.webp'; // 🎯 poster image
 
-// Preload images
-const preloadImages = (imageUrls) => {
-  imageUrls.forEach(url => {
-    const img = new Image();
-    img.src = url;
-    img.decode?.(); // decode image if supported
-  });
+// Custom hook for image preloading
+const useImagePreloader = (imageList) => {
+  useEffect(() => {
+    const preload = async () => {
+      await Promise.all(
+        imageList.map(src => 
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = resolve; // Don't block if one fails
+          })
+        )
+      );
+    };
+    preload();
+  }, [imageList]);
 };
 
-const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
+const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
   return (
     <>
@@ -39,17 +49,43 @@ const AnimatedLetters = ({ text, scrollYProgress, range = [0, 0.3] }) => {
       })}
     </>
   );
-};
+});
 
-const RotatingImages = ({ images }) => {
+const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    const preload = async () => {
+      await Promise.all(
+        images.map(src => 
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+          })
+        )
+      );
+      setLoaded(true);
+    };
+    preload();
+  }, [images]);
+
+  useEffect(() => {
+    if (!loaded) return;
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [images.length, loaded]);
+
+  if (!loaded) {
+    return (
+      <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center">
+        <div className="spinner-small"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden">
@@ -58,34 +94,31 @@ const RotatingImages = ({ images }) => {
           key={index}
           src={img}
           alt="Service"
-          loading="eager"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl transition-opacity duration-1000 ease-in-out"
-          style={{
-            opacity: index === currentIndex ? 1 : 0,
-            transition: 'opacity 0.8s ease-in-out'
-          }}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: index === currentIndex ? 1 : 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
         />
       ))}
     </div>
   );
-};
+});
 
-const Service3 = () => {
+const service3 = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start']
   });
 
-  useEffect(() => {
-    preloadImages([a1, a2, a3, poster]);
-  }, []);
+  // Preload all images for this component
+  useImagePreloader([a1, a2, a3, poster]);
 
   return (
     <section
       ref={sectionRef}
       className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-12 md:space-y-28 overflow-hidden"
-      style={{ transformStyle: 'preserve-3d' }}
     >
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
@@ -98,11 +131,12 @@ const Service3 = () => {
         </div>
 
         {/* Poster + Rotating Images */}
-        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px]overflow-hidden flex items-center justify-center bg-gray-900">
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
           <img 
             src={poster} 
             alt="Poster Background" 
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
+            loading="eager"
           />
           <div className="relative w-[85%] h-[85%] overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[a1, a2, a3]} />
@@ -113,4 +147,4 @@ const Service3 = () => {
   );
 };
 
-export default Service3;
+export default React.memo(service3);
