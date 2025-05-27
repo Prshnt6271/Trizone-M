@@ -1,68 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 // Static image imports
-import poster from "../assets/services/poster.webp";
+import poster from "../assets/services/poster.webp"; // 🎯 Poster background image
+
 import i1 from "../assets/services/i1.webp";
 import i2 from "../assets/services/i2.webp";
 import i3 from "../assets/services/i3.webp";
+// import i4 from "../assets/services/i4.jpg";
+// import i5 from "../assets/services/i5.jpg";
+
 import l1 from "../assets/services/l1.webp";
 import l2 from "../assets/services/l2.webp";
 import l3 from "../assets/services/l3.jpg";
+// import l4 from "../assets/services/l4.jpg";
+// import l5 from "../assets/services/l5.jpg";
+// import l6 from "../assets/services/l6.jpg";
+
 import p1 from "../assets/services/p1.webp";
 import p2 from "../assets/services/p2.webp";
 import p3 from "../assets/services/p3.webp";
+// import p4 from "../assets/services/p4.jpg";
+// import p5 from "../assets/services/p5.jpg";
+// import p6 from "../assets/services/p6.jpg";
 
+
+// Preload hook
 const useImagePreloader = (imageList) => {
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-
   useEffect(() => {
-    let isMounted = true;
-    
-    const preload = async () => {
-      try {
-        await Promise.all(
-          imageList.map(src => 
-            new Promise((resolve) => {
-              const img = new Image();
-              img.src = src;
-              img.onload = resolve;
-              img.onerror = resolve;
-            })
-          )
-        );
-        if (isMounted) setImagesLoaded(true);
-      } catch (e) {
-        if (isMounted) setImagesLoaded(true);
-      }
-    };
-    
-    preload();
-    
-    return () => {
-      isMounted = false;
-    };
+    imageList.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
   }, [imageList]);
-
-  return imagesLoaded;
 };
 
-const AnimatedLetters = React.memo(({ text }) => {
+const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
-  
   return (
     <>
-      {letters.map((letter, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0.3, color: "#999999" }}
-          animate={{ opacity: 1, color: "#ffffff" }}
-          transition={{ duration: 0.5, delay: i * 0.03 }}
-          className="inline-block"
-        >
-          {letter === " " ? "\u00A0" : letter}
-        </motion.span>
-      ))}
+      {letters.map((letter, i) => {
+        const [startRange, endRange] = range;
+        const start = startRange + (i / letters.length) * (endRange - startRange);
+        const end = start + (0.5 / letters.length) * (endRange - startRange);
+        const opacity = useTransform(scrollYProgress, [start, end], [0.5, 1]);
+        const color = useTransform(scrollYProgress, [start, end], ["#aaaaaa", "#ffffff"]);
+
+        return (
+          <motion.span 
+            key={i}
+            style={{ opacity, color }}
+            className="inline-block will-change-transform"
+          >
+            {letter === " " ? "\u00A0" : letter}
+          </motion.span>
+        );
+      })}
     </>
   );
 });
@@ -72,40 +66,27 @@ const RotatingImages = React.memo(({ images }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-    
     const preload = async () => {
-      try {
-        await Promise.all(
-          images.map(src => 
-            new Promise((resolve) => {
-              const img = new Image();
-              img.src = src;
-              img.onload = resolve;
-              img.onerror = resolve;
-            })
-          )
-        );
-        if (isMounted) setLoaded(true);
-      } catch (e) {
-        if (isMounted) setLoaded(true);
-      }
+      await Promise.all(
+        images.map(src => 
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+          })
+        )
+      );
+      setLoaded(true);
     };
-    
     preload();
-    
-    return () => {
-      isMounted = false;
-    };
   }, [images]);
 
   useEffect(() => {
     if (!loaded) return;
-    
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
-    
+
     return () => clearInterval(interval);
   }, [images.length, loaded]);
 
@@ -124,8 +105,8 @@ const RotatingImages = React.memo(({ images }) => {
           key={index}
           src={img}
           alt="Service"
-          loading="eager"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl"
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
           initial={{ opacity: 0 }}
           animate={{ opacity: index === currentIndex ? 1 : 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
@@ -135,25 +116,30 @@ const RotatingImages = React.memo(({ images }) => {
   );
 });
 
-const Service44 = () => {
-  const allImages = [poster, i1, i2, i3, l1, l2, l3, p1, p2, p3];
-  const imagesLoaded = useImagePreloader(allImages);
+const service4 = () => {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
 
-  if (!imagesLoaded) {
-    return (
-      <div className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 min-h-[80vh] flex items-center justify-center">
-        <div className="spinner"></div>
-      </div>
-    );
-  }
+  // Preload all images for this component
+  useImagePreloader([
+    poster, i1, i2, i3, 
+    l1, l2, l3, 
+    p1, p2, p3
+  ]);
 
   return (
-    <section className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-20 md:space-y-32">
+    <section
+      ref={sectionRef}
+      className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-20 md:space-y-32 overflow-hidden"
+    >
       {/* Interior Design Section */}
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Interior Design" />
+            <AnimatedLetters text="Interior Design" scrollYProgress={scrollYProgress} range={[0, 0.25]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
             Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters.
@@ -179,7 +165,7 @@ const Service44 = () => {
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Landscape Architecture" />
+            <AnimatedLetters text="Landscape Architecture" scrollYProgress={scrollYProgress} range={[0.25, 0.5]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
             Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments
@@ -205,7 +191,7 @@ const Service44 = () => {
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Project Management" />
+            <AnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
             Precision meets design. With a streamlined project management system, Trizzone ensures every
@@ -229,4 +215,4 @@ const Service44 = () => {
   );
 };
 
-export default React.memo(Service44);
+export default React.memo(service4);
