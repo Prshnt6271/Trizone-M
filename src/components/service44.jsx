@@ -1,5 +1,6 @@
+
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useWillChange } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 // Static image imports
 import poster from "../assets/services/poster.webp"; // 🎯 Poster background image
@@ -24,121 +25,121 @@ import p3 from "../assets/services/p3.webp";
 // import p5 from "../assets/services/p5.jpg";
 // import p6 from "../assets/services/p6.jpg";
 
-const Service44 = () => {
-  const willChange = useWillChange();
-  const containerRefs = useRef([]);
 
-  const interiorImages = [i1, i2, i3];
-  const landscapeImages = [l1, l2, l3];
-  const projectImages = [p1, p2, p3];
+// Preload hook
+const useImagePreloader = (imageList) => {
+  useEffect(() => {
+    imageList.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, [imageList]);
+};
 
-  const AnimatedLetters = React.memo(({ text }) => (
-    <span className="inline-block">
-      {text.split("").map((letter, i) => (
-        <motion.span
-          key={i}
-          className="inline-block"
-          initial={{ opacity: 0.3, color: '#999999' }}
-          whileInView={{ opacity: 1, color: '#ffffff' }}
-          viewport={{ once: true, margin: '-20% 0px -20% 0px' }}
-          transition={{
-            duration: 0.5,
-            delay: i * 0.03,
-            ease: 'easeOut'
-          }}
-        >
-          {letter === " " ? "\u00A0" : letter}
-        </motion.span>
-      ))}
-    </span>
-  ));
+const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
+  const letters = text.split("");
+  return (
+    <>
+      {letters.map((letter, i) => {
+        const [startRange, endRange] = range;
+        const start = startRange + (i / letters.length) * (endRange - startRange);
+        const end = start + (0.5 / letters.length) * (endRange - startRange);
+        const opacity = useTransform(scrollYProgress, [start, end], [0.5, 1]);
+        const color = useTransform(scrollYProgress, [start, end], ["#aaaaaa", "#ffffff"]);
 
-  const RotatingImages = React.memo(({ images, index }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [loaded, setLoaded] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+        return (
+          <motion.span 
+            key={i}
+            style={{ opacity, color }}
+            className="inline-block will-change-transform"
+          >
+            {letter === " " ? "\u00A0" : letter}
+          </motion.span>
+        );
+      })}
+    </>
+  );
+});
 
-    useEffect(() => {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(containerRefs.current[index]);
-          }
-        },
-        { threshold: 0.1 }
+const RotatingImages = React.memo(({ images }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const preload = async () => {
+      await Promise.all(
+        images.map(src => 
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+          })
+        )
       );
+      setLoaded(true);
+    };
+    preload();
+  }, [images]);
 
-      if (containerRefs.current[index]) {
-        observer.observe(containerRefs.current[index]);
-      }
+  useEffect(() => {
+    if (!loaded) return;
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % images.length);
+    }, 3000);
 
-      return () => observer.disconnect();
-    }, [index]);
+    return () => clearInterval(interval);
+  }, [images.length, loaded]);
 
-    useEffect(() => {
-      if (!isVisible || !loaded) return;
-
-      const interval = setInterval(() => {
-        setCurrentIndex(prev => (prev + 1) % images.length);
-      }, 3000);
-
-      return () => clearInterval(interval);
-    }, [images.length, loaded, isVisible]);
-
-    useEffect(() => {
-      if (!isVisible) return;
-
-      let loadedCount = 0;
-      const onLoad = () => {
-        loadedCount++;
-        if (loadedCount === images.length) {
-          setLoaded(true);
-        }
-      };
-
-      images.forEach(src => {
-        const img = new Image();
-        img.src = src;
-        img.onload = onLoad;
-      });
-    }, [isVisible, images]);
-
-    if (!loaded) {
-      return (
-        <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center" style={{ willChange: 'opacity' }}>
-          <div className="spinner-small"></div>
-        </div>
-      );
-    }
-
+  if (!loaded) {
     return (
-      <div className="relative w-full h-full rounded-xl overflow-hidden">
-        {images.map((img, idx) => (
-          <motion.img
-            key={idx}
-            src={img}
-            alt="Service"
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover rounded-xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: idx === currentIndex ? 1 : 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            style={{ willChange }}
-          />
-        ))}
+      <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center">
+        <div className="spinner-small"></div>
       </div>
     );
-  });
+  }
 
   return (
-    <section className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-20 md:space-y-32 overflow-hidden">
+    <div className="relative w-full h-full rounded-xl overflow-hidden">
+      {images.map((img, index) => (
+        <motion.img
+          key={index}
+          src={img}
+          alt="Service"
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl will-change-transform"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: index === currentIndex ? 1 : 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+});
+
+const service44 = () => {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Preload all images for this component
+  useImagePreloader([
+    poster, i1, i2, i3, 
+    l1, l2, l3, 
+    p1, p2, p3
+  ]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative bg-[#1b1b1b] text-white py-16 px-6 md:px-20 space-y-20 md:space-y-32 overflow-hidden"
+    >
       {/* Interior Design Section */}
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Interior Design" />
+            <AnimatedLetters text="Interior Design" scrollYProgress={scrollYProgress} range={[0, 0.25]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
             Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters.
@@ -147,20 +148,15 @@ const Service44 = () => {
           </p>
         </div>
 
-        <div
-          ref={el => containerRefs.current[0] = el}
-          className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900"
-        >
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
           <img
             src={poster}
             alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
             loading="eager"
-            decoding="sync"
-            fetchPriority="high"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={interiorImages} index={0} />
+            <RotatingImages images={[i1, i2, i3]} />
           </div>
         </div>
       </div>
@@ -169,7 +165,7 @@ const Service44 = () => {
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Landscape Architecture" />
+            <AnimatedLetters text="Landscape Architecture" scrollYProgress={scrollYProgress} range={[0.25, 0.5]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
             Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments
@@ -178,20 +174,15 @@ const Service44 = () => {
           </p>
         </div>
 
-        <div
-          ref={el => containerRefs.current[1] = el}
-          className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900"
-        >
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
           <img
             src={poster}
             alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
             loading="eager"
-            decoding="sync"
-            fetchPriority="high"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={landscapeImages} index={1} />
+            <RotatingImages images={[l1, l2, l3]} />
           </div>
         </div>
       </div>
@@ -200,7 +191,7 @@ const Service44 = () => {
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Project Management" />
+            <AnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
             Precision meets design. With a streamlined project management system, Trizzone ensures every
@@ -208,20 +199,15 @@ const Service44 = () => {
           </p>
         </div>
 
-        <div
-          ref={el => containerRefs.current[2] = el}
-          className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900"
-        >
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
           <img
             src={poster}
             alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
             loading="eager"
-            decoding="sync"
-            fetchPriority="high"
           />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
-            <RotatingImages images={projectImages} index={2} />
+            <RotatingImages images={[p1, p2, p3]} />
           </div>
         </div>
       </div>
@@ -229,4 +215,4 @@ const Service44 = () => {
   );
 };
 
-export default React.memo(Service44);
+export default React.memo(service44);
