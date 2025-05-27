@@ -1,9 +1,4 @@
-import React, { useRef, useState, useEffect, lazy, Suspense } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-
-// Optimized image imports
-const poster = "/optimized/poster.webp"; // Assume these are now served from public/optimized
-// Lazy imports for components only (not images)
+import React, { lazy, Suspense } from 'react';
 
 const Service1 = lazy(() => import('../components/service1'));
 const Service3 = lazy(() => import('../components/service3'));
@@ -16,7 +11,7 @@ const LoadingPlaceholder = () => (
   </div>
 );
 
-const service = () => {
+const Services = () => {
   return (
     <div className="bg-[#1b1b1b]">
       <Suspense fallback={<LoadingPlaceholder />}>
@@ -29,4 +24,4 @@ const service = () => {
   );
 };
 
-export default service;
+export default Services;
