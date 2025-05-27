@@ -10,13 +10,13 @@ const Service3 = () => {
   });
   const willChange = useWillChange();
 
-  // Image paths (now using optimized versions in public folder)
+  // Updated image paths
   const images = [
-    '/services/a1.webp',
-    '/services/a2.webp',
-    '/services/a3.webp'
+    '/assets/services/a1.webp',
+    '/assets/services/a2.webp',
+    '/assets/services/a3.webp'
   ];
-  const poster = '/services/poster.webp';
+  const poster = '/assets/services/poster.webp';
 
   // Simplified animation for Android compatibility
   const AnimatedLetters = React.memo(({ text }) => {
@@ -89,7 +89,7 @@ const Service3 = () => {
 
       images.forEach(src => {
         const img = new Image();
-        img.src = src;
+        img.src = process.env.PUBLIC_URL + src;
         img.onload = onLoad;
       });
     }, [isVisible]);
@@ -110,7 +110,7 @@ const Service3 = () => {
         {images.map((img, index) => (
           <motion.img
             key={index}
-            src={img}
+            src={process.env.PUBLIC_URL + img}
             alt="Service"
             loading="lazy"
             decoding="async"
@@ -145,7 +145,7 @@ const Service3 = () => {
           className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900"
         >
           <img 
-            src={poster} 
+            src={process.env.PUBLIC_URL + poster} 
             alt="Poster Background" 
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
             loading="eager"
