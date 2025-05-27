@@ -1,53 +1,57 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useWillChange } from 'framer-motion';
 
+// Static image imports
+import poster from "../assets/services/poster.webp"; // 🎯 Poster background image
+
+import i1 from "../assets/services/i1.webp";
+import i2 from "../assets/services/i2.webp";
+import i3 from "../assets/services/i3.webp";
+// import i4 from "../assets/services/i4.jpg";
+// import i5 from "../assets/services/i5.jpg";
+
+import l1 from "../assets/services/l1.webp";
+import l2 from "../assets/services/l2.webp";
+import l3 from "../assets/services/l3.jpg";
+// import l4 from "../assets/services/l4.jpg";
+// import l5 from "../assets/services/l5.jpg";
+// import l6 from "../assets/services/l6.jpg";
+
+import p1 from "../assets/services/p1.webp";
+import p2 from "../assets/services/p2.webp";
+import p3 from "../assets/services/p3.webp";
+// import p4 from "../assets/services/p4.jpg";
+// import p5 from "../assets/services/p5.jpg";
+// import p6 from "../assets/services/p6.jpg";
+
 const Service44 = () => {
   const willChange = useWillChange();
   const containerRefs = useRef([]);
 
-  // Image paths
-  const interiorImages = [
-    '/services/i1.webp',
-    '/services/i2.webp',
-    '/services/i3.webp'
-  ];
-  
-  const landscapeImages = [
-    '/services/l1.webp',
-    '/services/l2.webp',
-    '/services/l3.webp'
-  ];
-  
-  const projectImages = [
-    '/services/p1.webp',
-    '/services/p2.webp',
-    '/services/p3.webp'
-  ];
-  
-  const poster = '/services/poster.webp';
+  const interiorImages = [i1, i2, i3];
+  const landscapeImages = [l1, l2, l3];
+  const projectImages = [p1, p2, p3];
 
-  const AnimatedLetters = React.memo(({ text }) => {
-    return (
-      <span className="inline-block">
-        {text.split("").map((letter, i) => (
-          <motion.span
-            key={i}
-            className="inline-block"
-            initial={{ opacity: 0.3, color: '#999999' }}
-            whileInView={{ opacity: 1, color: '#ffffff' }}
-            viewport={{ once: true, margin: '-20% 0px -20% 0px' }}
-            transition={{ 
-              duration: 0.5,
-              delay: i * 0.03,
-              ease: 'easeOut'
-            }}
-          >
-            {letter === " " ? "\u00A0" : letter}
-          </motion.span>
-        ))}
-      </span>
-    );
-  });
+  const AnimatedLetters = React.memo(({ text }) => (
+    <span className="inline-block">
+      {text.split("").map((letter, i) => (
+        <motion.span
+          key={i}
+          className="inline-block"
+          initial={{ opacity: 0.3, color: '#999999' }}
+          whileInView={{ opacity: 1, color: '#ffffff' }}
+          viewport={{ once: true, margin: '-20% 0px -20% 0px' }}
+          transition={{
+            duration: 0.5,
+            delay: i * 0.03,
+            ease: 'easeOut'
+          }}
+        >
+          {letter === " " ? "\u00A0" : letter}
+        </motion.span>
+      ))}
+    </span>
+  ));
 
   const RotatingImages = React.memo(({ images, index }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -74,18 +78,17 @@ const Service44 = () => {
 
     useEffect(() => {
       if (!isVisible || !loaded) return;
-      
+
       const interval = setInterval(() => {
         setCurrentIndex(prev => (prev + 1) % images.length);
       }, 3000);
-      
+
       return () => clearInterval(interval);
     }, [images.length, loaded, isVisible]);
 
     useEffect(() => {
       if (!isVisible) return;
-      
-      // Simple image loading for Android
+
       let loadedCount = 0;
       const onLoad = () => {
         loadedCount++;
@@ -103,10 +106,7 @@ const Service44 = () => {
 
     if (!loaded) {
       return (
-        <div 
-          className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center"
-          style={{ willChange: 'opacity' }}
-        >
+        <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center" style={{ willChange: 'opacity' }}>
           <div className="spinner-small"></div>
         </div>
       );
@@ -147,7 +147,7 @@ const Service44 = () => {
           </p>
         </div>
 
-        <div 
+        <div
           ref={el => containerRefs.current[0] = el}
           className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900"
         >
@@ -178,7 +178,7 @@ const Service44 = () => {
           </p>
         </div>
 
-        <div 
+        <div
           ref={el => containerRefs.current[1] = el}
           className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900"
         >
@@ -208,7 +208,7 @@ const Service44 = () => {
           </p>
         </div>
 
-        <div 
+        <div
           ref={el => containerRefs.current[2] = el}
           className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900"
         >
