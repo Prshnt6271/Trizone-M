@@ -72,7 +72,7 @@ const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) 
         ));
 
         // Light gray to full white transition
-        const startColor = 70; // light gray
+        const startColor = 50; // light gray
         const endColor = 255;   // white
         const channel = Math.round(startColor + (endColor - startColor) * localProgress);
         const color = `rgb(${channel}, ${channel}, ${channel})`;
