@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 // Static image imports
 import poster from "../assets/services/poster.webp";
@@ -36,6 +36,7 @@ const useOptimizedScroll = (ref) => {
       }
     };
 
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -64,29 +65,16 @@ const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) 
   return (
     <>
       {letters.map((letter, i) => {
-        // Calculate individual letter progress with staggered delay
-        const letterDelay = i * 0.03; // Each letter starts slightly after the previous one
-        const letterProgress = Math.min(1, Math.max(0, 
-          (scrollProgress - range[0] - letterDelay) / (range[1] - range[0])
+        const progress = Math.min(1, Math.max(0, 
+          (scrollProgress - range[0]) / (range[1] - range[0])
         ));
-        
-        // Smooth transition using easing function
-        const easedProgress = letterProgress < 0.5 
-          ? 2 * letterProgress * letterProgress 
-          : 1 - Math.pow(-2 * letterProgress + 2, 2) / 2;
-        
-        // Start from gray (0.6 opacity) and transition to white (1 opacity)
-        const opacity = 0.6 + (0.4 * easedProgress);
-        const color = `rgba(255,255,255,${easedProgress})`;
+        const opacity = 0.5 + (0.5 * progress);
+        const color = `rgba(255,255,255,${progress})`;
 
         return (
           <span 
             key={i}
-            style={{ 
-              opacity,
-              color,
-              transition: 'color 0.3s ease-out, opacity 0.3s ease-out'
-            }}
+            style={{ opacity, color }}
             className="inline-block will-change-transform"
           >
             {letter === " " ? "\u00A0" : letter}
@@ -99,7 +87,7 @@ const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) 
 
 const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loadedIndices, setLoadedIndices] = useState(new Set([0]));
+  const [loadedIndices, setLoadedIndices] = useState(new Set([0])); // Load first image immediately
 
   const handleLoad = (index) => {
     setLoadedIndices(prev => new Set(prev).add(index));
