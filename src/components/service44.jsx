@@ -58,22 +58,16 @@ const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  if (isMobile) {
-    return <span className="text-white">{text}</span>;
-  }
-
   return (
     <>
       {letters.map((letter, i) => {
-        // Letter-specific delay to create the "one-by-one fill" effect
-        const letterDelay = i * 0.03; // adjust for stagger spacing
+        const letterDelay = isMobile ? i * 0.015 : i * 0.03;
         const localProgress = Math.min(1, Math.max(0,
           (scrollProgress - range[0] - letterDelay) / (range[1] - range[0])
         ));
 
-        // Light gray to full white transition
-        const startColor = 50; // light gray
-        const endColor = 255;   // white
+        const startColor = 50;
+        const endColor = 255;
         const channel = Math.round(startColor + (endColor - startColor) * localProgress);
         const color = `rgb(${channel}, ${channel}, ${channel})`;
 
@@ -94,6 +88,7 @@ const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) 
     </>
   );
 });
+
 
 
 const RotatingImages = React.memo(({ images }) => {
