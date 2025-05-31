@@ -65,17 +65,27 @@ const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) 
   return (
     <>
       {letters.map((letter, i) => {
-        const progress = Math.min(1, Math.max(0, 
-          (scrollProgress - range[0]) / (range[1] - range[0])
+        // Letter-specific delay to create the "one-by-one fill" effect
+        const letterDelay = i * 0.03; // adjust for stagger spacing
+        const localProgress = Math.min(1, Math.max(0,
+          (scrollProgress - range[0] - letterDelay) / (range[1] - range[0])
         ));
-        const opacity = 0.5 + (0.5 * progress);
-        const color = `rgba(255,255,255,${progress})`;
+
+        // Light gray to full white transition
+        const startColor = 70; // light gray
+        const endColor = 255;   // white
+        const channel = Math.round(startColor + (endColor - startColor) * localProgress);
+        const color = `rgb(${channel}, ${channel}, ${channel})`;
 
         return (
-          <span 
+          <span
             key={i}
-            style={{ opacity, color }}
-            className="inline-block will-change-transform"
+            style={{
+              color,
+              transition: 'color 0.3s ease',
+              willChange: 'color'
+            }}
+            className="inline-block"
           >
             {letter === " " ? "\u00A0" : letter}
           </span>
@@ -84,6 +94,7 @@ const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) 
     </>
   );
 });
+
 
 const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
