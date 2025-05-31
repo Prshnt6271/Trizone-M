@@ -4,36 +4,16 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import a1 from '../assets/services/a1.webp';
 import a2 from '../assets/services/a2.webp';
 import a3 from '../assets/services/a3.webp';
-// import a4 from '../assets/services/a4.jpg';
-import poster from '../assets/services/poster.webp'; // 🎯 poster image
+import poster from '../assets/services/poster.webp';
 
-// Custom hook for image preloading
-const useImagePreloader = (imageList) => {
-  useEffect(() => {
-    const preload = async () => {
-      await Promise.all(
-        imageList.map(src => 
-          new Promise((resolve) => {
-            const img = new Image();
-            img.src = src;
-            img.onload = resolve;
-            img.onerror = resolve; // Don't block if one fails
-          })
-        )
-      );
-    };
-    preload();
-  }, [imageList]);
-};
-
+// ✅ AnimatedLetters component (same logic as in service44)
 const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
   return (
     <>
       {letters.map((letter, i) => {
-        const [startRange, endRange] = range;
-        const start = startRange + (i / letters.length) * (endRange - startRange);
-        const end = start + (0.5 / letters.length) * (endRange - startRange);
+        const start = range[0] + (i / letters.length) * (range[1] - range[0]);
+        const end = start + (0.5 / letters.length) * (range[1] - range[0]);
         const opacity = useTransform(scrollYProgress, [start, end], [0.3, 1]);
         const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
 
@@ -51,6 +31,26 @@ const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] })
   );
 });
 
+// ✅ Preloader hook
+const useImagePreloader = (imageList) => {
+  useEffect(() => {
+    const preload = async () => {
+      await Promise.all(
+        imageList.map(src =>
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = resolve;
+          })
+        )
+      );
+    };
+    preload();
+  }, [imageList]);
+};
+
+// ✅ RotatingImages component
 const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
@@ -58,7 +58,7 @@ const RotatingImages = React.memo(({ images }) => {
   useEffect(() => {
     const preload = async () => {
       await Promise.all(
-        images.map(src => 
+        images.map(src =>
           new Promise((resolve) => {
             const img = new Image();
             img.src = src;
@@ -105,14 +105,14 @@ const RotatingImages = React.memo(({ images }) => {
   );
 });
 
-const service3 = () => {
+// ✅ Service3 component
+const Service3 = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start end', 'end start']
+    offset: ['start end', 'end start'],
   });
 
-  // Preload all images for this component
   useImagePreloader([a1, a2, a3, poster]);
 
   return (
@@ -130,11 +130,10 @@ const service3 = () => {
           </p>
         </div>
 
-        {/* Poster + Rotating Images */}
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
-          <img 
-            src={poster} 
-            alt="Poster Background" 
+          <img
+            src={poster}
+            alt="Poster Background"
             className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
             loading="eager"
           />
@@ -147,4 +146,4 @@ const service3 = () => {
   );
 };
 
-export default React.memo(service3);
+export default React.memo(Service3);
