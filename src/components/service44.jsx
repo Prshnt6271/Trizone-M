@@ -1,7 +1,7 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-// Static image imports
+// Assets
 import poster from "../assets/services/poster.webp";
 import i1 from "../assets/services/i1.webp";
 import i2 from "../assets/services/i2.webp";
@@ -13,87 +13,36 @@ import p1 from "../assets/services/p1.webp";
 import p2 from "../assets/services/p2.webp";
 import p3 from "../assets/services/p3.webp";
 
-// Custom optimized scroll hook
-const useOptimizedScroll = (ref) => {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-
-    let ticking = false;
-    let animationFrameId = null;
-    
-    const handleScroll = () => {
-      if (!ticking) {
-        animationFrameId = requestAnimationFrame(() => {
-          const { top, height } = element.getBoundingClientRect();
-          const progress = Math.min(1, Math.max(0, (window.innerHeight - top) / height));
-          setScrollProgress(progress);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    };
-  }, [ref]);
-
-  return scrollProgress;
-};
-
-const AnimatedLetters = React.memo(({ text, scrollProgress, range = [0, 0.3] }) => {
+// ✅ AnimatedLetters using useTransform
+const AnimatedLetters = React.memo(({ text, scrollYProgress, range = [0, 0.3] }) => {
   const letters = text.split("");
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   return (
     <>
       {letters.map((letter, i) => {
-        const letterDelay = isMobile ? i * 0.015 : i * 0.03;
-        const localProgress = Math.min(1, Math.max(0,
-          (scrollProgress - range[0] - letterDelay) / (range[1] - range[0])
-        ));
-
-        const startColor = 50;
-        const endColor = 255;
-        const channel = Math.round(startColor + (endColor - startColor) * localProgress);
-        const color = `rgb(${channel}, ${channel}, ${channel})`;
+        const start = range[0] + (i / letters.length) * (range[1] - range[0]);
+        const end = start + (0.5 / letters.length) * (range[1] - range[0]);
+        const opacity = useTransform(scrollYProgress, [start, end], [0.3, 1]);
+        const color = useTransform(scrollYProgress, [start, end], ["#999999", "#ffffff"]);
 
         return (
-          <span
+          <motion.span
             key={i}
-            style={{
-              color,
-              transition: 'color 0.3s ease',
-              willChange: 'color'
-            }}
-            className="inline-block"
+            style={{ opacity, color }}
+            className="inline-block will-change-transform"
           >
             {letter === " " ? "\u00A0" : letter}
-          </span>
+          </motion.span>
         );
       })}
     </>
   );
 });
 
-
-
+// ✅ RotatingImages component remains unchanged
 const RotatingImages = React.memo(({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loadedIndices, setLoadedIndices] = useState(new Set([0])); // Load first image immediately
+  const [loadedIndices, setLoadedIndices] = useState(new Set([0]));
 
   const handleLoad = (index) => {
     setLoadedIndices(prev => new Set(prev).add(index));
@@ -103,7 +52,6 @@ const RotatingImages = React.memo(({ images }) => {
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % images.length);
     }, 3000);
-
     return () => clearInterval(interval);
   }, [images.length]);
 
@@ -131,19 +79,11 @@ const RotatingImages = React.memo(({ images }) => {
   );
 });
 
-const service44 = () => {
+const Service44 = () => {
   const sectionRef = useRef(null);
-  const scrollProgress = useOptimizedScroll(sectionRef);
-  const [isMobile, setIsMobile] = useState(false);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Preload first image of each set immediately
+  // Preload first image of each set
   useEffect(() => {
     [i1, l1, p1].forEach(src => {
       const img = new Image();
@@ -161,23 +101,14 @@ const service44 = () => {
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Interior Design" scrollProgress={scrollProgress} range={[0, 0.25]} />
+            <AnimatedLetters text="Interior Design" scrollYProgress={scrollYProgress} range={[0, 0.25]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters.
-            From the texture of a wall to the way natural light moves through a room, we create interiors that
-            are calm, refined, and effortlessly elegant.
+            Our interior design philosophy is rooted in simplicity, light, and purpose...
           </p>
         </div>
-
-        <div className="rotating-images-container relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
-          <img
-            src={poster}
-            alt="Poster Background"
-            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            loading="eager"
-            decoding="sync"
-          />
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+          <img src={poster} alt="Poster" className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80" />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[i1, i2, i3]} />
           </div>
@@ -188,23 +119,14 @@ const service44 = () => {
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Landscape Architecture" scrollProgress={scrollProgress} range={[0.25, 0.5]} />
+            <AnimatedLetters text="Landscape Architecture" scrollYProgress={scrollYProgress} range={[0.25, 0.5]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments
-            where every element has intention—from native plant selections to subtle transitions between built
-            and natural spaces.
+            Nature and design, in quiet harmony...
           </p>
         </div>
-
-        <div className="rotating-images-container relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
-          <img
-            src={poster}
-            alt="Poster Background"
-            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            loading="eager"
-            decoding="sync"
-          />
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+          <img src={poster} alt="Poster" className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80" />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[l1, l2, l3]} />
           </div>
@@ -215,22 +137,14 @@ const service44 = () => {
       <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-8 md:gap-12 relative">
         <div className="w-full md:w-1/2 space-y-6 z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold">
-            <AnimatedLetters text="Project Management" scrollProgress={scrollProgress} range={[0.5, 0.75]} />
+            <AnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Precision meets design. With a streamlined project management system, Trizzone ensures every
-            detail—from concept to completion—is handled with care, efficiency, and absolute clarity.
+            Precision meets design. With a streamlined project management system...
           </p>
         </div>
-
-        <div className="rotating-images-container relative w-full md:w-1/2 h-[320px] md:h-[420px] overflow-hidden flex items-center justify-center bg-gray-900">
-          <img
-            src={poster}
-            alt="Poster Background"
-            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80"
-            loading="eager"
-            decoding="sync"
-          />
+        <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
+          <img src={poster} alt="Poster" className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-80" />
           <div className="relative w-[85%] h-[85%] rounded-xl overflow-hidden z-10 shadow-lg">
             <RotatingImages images={[p1, p2, p3]} />
           </div>
@@ -240,4 +154,4 @@ const service44 = () => {
   );
 };
 
-export default React.memo(service44);
+export default React.memo(Service44);
