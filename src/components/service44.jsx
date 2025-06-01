@@ -103,8 +103,10 @@ const Service44 = () => {
           <h2 className="text-4xl md:text-5xl font-extrabold">
             <AnimatedLetters text="Interior Design" scrollYProgress={scrollYProgress} range={[0, 0.25]} />
           </h2>
-          <p className="text-white font-medium text-base md:text-lg">
-            Our interior design philosophy is rooted in simplicity, light, and purpose...
+           <p className="text-white font-medium text-base md:text-lg">
+            Our interior design philosophy is rooted in simplicity, light, and purpose. Every detail matters.
+            From the texture of a wall to the way natural light moves through a room, we create interiors that
+            are calm, refined, and effortlessly elegant.
           </p>
         </div>
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
@@ -122,7 +124,9 @@ const Service44 = () => {
             <AnimatedLetters text="Landscape Architecture" scrollYProgress={scrollYProgress} range={[0.25, 0.5]} />
           </h2>
           <p className="text-white font-medium text-base md:text-lg">
-            Nature and design, in quiet harmony...
+            Nature and design, in quiet harmony. Our landscape architecture creates serene outdoor environments
+            where every element has intention—from native plant selections to subtle transitions between built
+            and natural spaces.
           </p>
         </div>
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
@@ -139,8 +143,9 @@ const Service44 = () => {
           <h2 className="text-4xl md:text-5xl font-extrabold">
             <AnimatedLetters text="Project Management" scrollYProgress={scrollYProgress} range={[0.5, 0.75]} />
           </h2>
-          <p className="text-white font-medium text-base md:text-lg">
-            Precision meets design. With a streamlined project management system...
+           <p className="text-white font-medium text-base md:text-lg">
+            Precision meets design. With a streamlined project management system, Trizzone ensures every
+            detail—from concept to completion—is handled with care, efficiency, and absolute clarity.
           </p>
         </div>
         <div className="relative w-full md:w-1/2 h-[320px] md:h-[420px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-900">
