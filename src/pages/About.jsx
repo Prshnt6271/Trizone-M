@@ -5,16 +5,16 @@ const images = ["/about1.jpg", "/about2.jpg", "/about3.jpg", "/about4.jpg"];
 
 const paragraphs = [
   `Profile
-Vibhor Mehra is a registered architect (COA) and an Associate of the Indian Institute of Architects (IIA). As the Founding Partner and Principal Architect, he brings over 16 years of experience in the field of architecture, contributing significantly to the design and execution of complex building projects across India. A graduate in architecture, Vibhor is known for his ability to blend technical precision with creative expression, making him a valuable asset in every phase of project development—from concept to completion.`,
+Vibhor Mehra, a registered architect (COA) and IIA Associate, is the Founding Partner and Principal Architect with over 16 years of experience. He excels in blending technical detail with creative design from concept to completion.`,
 
   `Experience
-Over the years, Vibhor has worked with esteemed architectural firms such as Ajoy Choudhury Associates (Gurgaon), Neev (Jodhpur, Rajasthan), and Neel Ghia – Architect (Ahmedabad, Gujarat). These collaborations have enriched his understanding of regional contexts, building typologies, and diverse client needs. His role has spanned across design development, detailing, and coordination of large-scale residential, commercial, and hospitality projects, giving him a well-rounded perspective on architectural practice.`,
-
-  `Specializations
-Vibhor’s approach to architecture is deeply rooted in sustainability and responsiveness to climate. He specializes in site planning and the integration of environmentally conscious strategies into architecture and landscape design. His expertise lies in crafting spaces that are not only functional but also harmoniously tied to their environment. With a strong command over graphic representation and conceptual visualization, he adds an artistic flair to presentation drawings—bringing architectural ideas to life with clarity and impact.`,
+Vibhor has worked with reputed firms like Ajoy Choudhury Associates, Neev, and Neel Ghia. His experience spans residential, commercial, and hospitality projects, covering design, detailing, and coordination.`,
 
   `Project Highlights
-His portfolio includes noteworthy projects like Greenwood Elements in Kolkata, ILD Spire Group Housing in Gurgaon, and Marriott Courtyard in Kolkata. These projects stand as a testament to his ability to manage scale, navigate complexity, and deliver contextually grounded design solutions. Whether working on luxury hospitality or urban residential developments, Vibhor’s focus remains on quality, innovation, and sustainability.`,
+His key projects include Greenwood Elements (Kolkata), ILD Spire (Gurgaon), and Marriott Courtyard (Kolkata). These reflect his strength in handling scale, complexity, and context-driven design.`,
+
+  `Specializations
+Focused on sustainable and climate-responsive design, Vibhor specializes in site planning and eco-conscious architecture. His strong visual communication skills bring clarity and impact to his presentations.`,
 ];
 
 const clients = [
@@ -54,7 +54,7 @@ const AboutUs = () => {
         {/* Text Overlay Box */}
         <div
           className={`absolute ${
-            isEven ? "bottom-10 right-10" : "top-20 left-10"
+            isEven ? "bottom-10 right-10" : "top-36 left-10"
           } w-[85%] md:w-[500px] p-4 md:p-6 rounded-md`}
         >
           {/* Masked background */}
