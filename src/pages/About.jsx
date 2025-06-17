@@ -8,13 +8,13 @@ const paragraphs = [
 Vibhor Mehra is a registered architect (COA) and an Associate of the Indian Institute of Architects (IIA). As the Founding Partner and Principal Architect, he brings over 16 years of experience in the field of architecture, contributing significantly to the design and execution of complex building projects across India. A graduate in architecture, Vibhor is known for his ability to blend technical precision with creative expression, making him a valuable asset in every phase of project development—from concept to completion.`,
 
   `Experience
-Vibhor has worked with firms like Ajoy Choudhury Associates, Neev, and Neel Ghia – Architect. These collaborations gave him hands-on experience in regional contexts, design development, and project coordination for residential and hospitality projects.`,
+Over the years, Vibhor has worked with esteemed architectural firms such as Ajoy Choudhury Associates (Gurgaon), Neev (Jodhpur, Rajasthan), and Neel Ghia – Architect (Ahmedabad, Gujarat). These collaborations have enriched his understanding of regional contexts, building typologies, and diverse client needs. His role has spanned across design development, detailing, and coordination of large-scale residential, commercial, and hospitality projects, giving him a well-rounded perspective on architectural practice.`,
 
   `Specializations
-He focuses on sustainable, climate-responsive design and site planning. His strength lies in integrating eco-conscious strategies with creative visualization to bring concepts to life through effective graphics and layouts.`,
+Vibhor’s approach to architecture is deeply rooted in sustainability and responsiveness to climate. He specializes in site planning and the integration of environmentally conscious strategies into architecture and landscape design. His expertise lies in crafting spaces that are not only functional but also harmoniously tied to their environment. With a strong command over graphic representation and conceptual visualization, he adds an artistic flair to presentation drawings—bringing architectural ideas to life with clarity and impact.`,
 
   `Project Highlights
-Major projects include Greenwood Elements (Kolkata), ILD Spire (Gurgaon), and Marriott Courtyard (Kolkata), all reflecting his attention to detail, innovation, and commitment to quality design solutions.`,
+His portfolio includes noteworthy projects like Greenwood Elements in Kolkata, ILD Spire Group Housing in Gurgaon, and Marriott Courtyard in Kolkata. These projects stand as a testament to his ability to manage scale, navigate complexity, and deliver contextually grounded design solutions. Whether working on luxury hospitality or urban residential developments, Vibhor’s focus remains on quality, innovation, and sustainability.`,
 ];
 
 const clients = [
@@ -40,9 +40,6 @@ const AboutUs = () => {
   }, []);
 
   const isEven = currentIndex % 2 === 0;
-  const boxPosition = isEven
-    ? "bottom-4 right-4 md:bottom-10 md:right-10"
-    : "top-4 left-4 md:top-10 md:left-10";
 
   return (
     <div>
@@ -51,16 +48,21 @@ const AboutUs = () => {
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          className="absolute top-0 left-0 w-full h-full object-cover"
         />
 
-        {/* Paragraph Overlay Box */}
+        {/* Text Overlay Box */}
         <div
-          className={`absolute ${boxPosition} w-[90%] md:w-[500px] h-[45vh] md:h-auto max-h-[60vh] overflow-y-auto p-4 md:p-6 rounded-md z-10`}
+          className={`absolute ${
+            isEven ? "bottom-10 right-10" : "top-20 left-10"
+          } w-[85%] md:w-[500px] p-4 md:p-6 rounded-md`}
         >
-          <div className="absolute inset-0 bg-black rounded-md z-0" />
+          {/* Masked background */}
+          <div className="absolute inset-0 bg-black/80 rounded-md z-0" />
+
+          {/* Text content */}
           <div className="relative z-10">
-            <h2 className="text-white text-lg md:text-3xl font-bold uppercase mb-2">
+            <h2 className="text-white text-xl md:text-3xl font-bold uppercase mb-2">
               {paragraphs[currentIndex].split("\n")[0]}
             </h2>
             <p className="text-white text-sm md:text-base leading-relaxed text-justify whitespace-pre-line">
