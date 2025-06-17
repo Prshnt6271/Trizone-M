@@ -5,7 +5,7 @@ const images = ["/about1.jpg", "/about2.jpg", "/about3.jpg", "/about4.jpg"];
 
 const paragraphs = [
   `Profile
-Vibhor Mehra is a registered architect (COA) and an Associate of the Indian Institute of Architects (IIA). As the Founding Partner and Principal Architect, he brings over 16 years of experience in the field of architecture, contributing significantly to the design and execution of complex building projects across India.`,
+Vibhor Mehra is a registered architect (COA) and an Associate of the Indian Institute of Architects (IIA). As the Founding Partner and Principal Architect, he brings over 16 years of experience in the field of architecture, contributing significantly to the design and execution of complex building projects across India. A graduate in architecture, Vibhor is known for his ability to blend technical precision with creative expression, making him a valuable asset in every phase of project development—from concept to completion.`,
 
   `Experience
 Vibhor has worked with firms like Ajoy Choudhury Associates, Neev, and Neel Ghia – Architect. These collaborations gave him hands-on experience in regional contexts, design development, and project coordination for residential and hospitality projects.`,
@@ -41,8 +41,8 @@ const AboutUs = () => {
 
   const isEven = currentIndex % 2 === 0;
   const boxPosition = isEven
-    ? "bottom-10 right-5 md:right-10"
-    : "top-10 left-5 md:left-10";
+    ? "bottom-4 right-4 md:bottom-10 md:right-10"
+    : "top-4 left-4 md:top-10 md:left-10";
 
   return (
     <div>
@@ -54,9 +54,9 @@ const AboutUs = () => {
           className="absolute top-0 left-0 w-full h-full object-cover z-0"
         />
 
-        {/* Paragraph Overlay */}
+        {/* Paragraph Overlay Box */}
         <div
-          className={`absolute ${boxPosition} w-[90%] md:w-[500px] max-h-[60vh] p-4 md:p-6 overflow-y-auto rounded-md z-10`}
+          className={`absolute ${boxPosition} w-[90%] md:w-[500px] h-[45vh] md:h-auto max-h-[60vh] overflow-y-auto p-4 md:p-6 rounded-md z-10`}
         >
           <div className="absolute inset-0 bg-black rounded-md z-0" />
           <div className="relative z-10">
