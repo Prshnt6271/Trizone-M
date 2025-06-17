@@ -41,8 +41,8 @@ const AboutUs = () => {
 
   const isEven = currentIndex % 2 === 0;
   const boxPosition = isEven
-    ? "bottom-10 right-5 sm:right-10"
-    : "top-20 left-5 sm:left-10";
+    ? "bottom-10 right-5 md:right-10"
+    : "top-10 left-5 md:left-10";
 
   return (
     <div>
@@ -56,7 +56,7 @@ const AboutUs = () => {
 
         {/* Paragraph Section with black background masking image */}
         <div
-          className={`absolute ${boxPosition} w-[90%] sm:w-[85%] md:w-[500px] p-4 md:p-6 rounded-md z-10`}
+          className={`absolute ${boxPosition} w-[90%] md:w-[500px] p-4 md:p-6 rounded-md z-10`}
         >
           {/* Black mask to hide image behind paragraph */}
           <div className="absolute inset-0 bg-black rounded-md z-0" />
