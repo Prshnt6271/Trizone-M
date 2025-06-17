@@ -44,7 +44,7 @@ const AboutUs = () => {
   return (
     <div>
       {/* Background Image Section */}
-      <div className="relative w-full h-screen overflow-hidden">
+      <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}
@@ -54,13 +54,10 @@ const AboutUs = () => {
         {/* Text Overlay Box */}
         <div
           className={`absolute ${
-            isEven ? "bottom-10 right-10" : "top-36 left-10"
-          } w-[85%] md:w-[500px] p-4 md:p-6 rounded-md`}
+            isEven ? "bottom-10 right-0" : "top-16 left-0"
+          } w-[90%] md:w-[500px] p-3 md:p-4 rounded-md`}
         >
-          {/* Masked background */}
           <div className="absolute inset-0 bg-black/80 rounded-md z-0" />
-
-          {/* Text content */}
           <div className="relative z-10">
             <h2 className="text-white text-xl md:text-3xl font-bold uppercase mb-2">
               {paragraphs[currentIndex].split("\n")[0]}
