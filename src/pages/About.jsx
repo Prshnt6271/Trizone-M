@@ -55,14 +55,15 @@ const AboutUs = () => {
         <div
           className={`absolute ${
             isEven ? "bottom-10 right-0" : "top-16 left-0"
-          } w-[90%] md:w-[500px] p-3 md:p-4 rounded-md`}
+          } w-[90%] md:w-[500px] p-3 md:p-4 z-10`}
         >
-          <div className="absolute inset-0 bg-black/80 rounded-md z-0" />
+          {/* Solid white background to hide image */}
+          <div className="absolute inset-0 bg-white z-0" />
           <div className="relative z-10">
-            <h2 className="text-white text-xl md:text-3xl font-bold uppercase mb-2">
+            <h2 className="text-black text-xl md:text-3xl font-bold uppercase mb-2">
               {paragraphs[currentIndex].split("\n")[0]}
             </h2>
-            <p className="text-white text-sm md:text-base leading-relaxed text-justify whitespace-pre-line">
+            <p className="text-black text-sm md:text-base leading-relaxed text-justify whitespace-pre-line">
               {paragraphs[currentIndex].split("\n").slice(1).join("\n")}
             </p>
           </div>
