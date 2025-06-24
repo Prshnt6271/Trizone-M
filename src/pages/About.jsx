@@ -58,12 +58,12 @@ const AboutUs = () => {
           } w-[90%] md:w-[500px] p-3 md:p-4 z-10`}
         >
           {/* Solid white background to hide image */}
-          <div className="absolute inset-0 bg-white z-0" />
+       <div className="absolute inset-0 bg-black/80 z-0" />
           <div className="relative z-10">
-            <h2 className="text-black text-xl md:text-3xl font-bold uppercase mb-2">
+            <h2 className="text-white text-xl md:text-3xl font-bold uppercase mb-2">
               {paragraphs[currentIndex].split("\n")[0]}
             </h2>
-            <p className="text-black text-sm md:text-base leading-relaxed text-justify whitespace-pre-line">
+            <p className="text-white text-sm md:text-base leading-relaxed text-justify whitespace-pre-line">
               {paragraphs[currentIndex].split("\n").slice(1).join("\n")}
             </p>
           </div>
