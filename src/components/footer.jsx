@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPinterest } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"; // ✅ Make sure you're using React Router
 
 const Footer = () => {
   const [selectedFirstCol, setSelectedFirstCol] = useState(null);
   const [selectedSecondCol, setSelectedSecondCol] = useState(null);
   const [language, setLanguage] = useState("ENGLISH");
+  const navigate = useNavigate(); // ✅ For page navigation
 
   const firstColumn = ["Practice", "Projects", "People", "Contact"];
 
   const secondColumnOptions = {
-    Practice: ["Ethos", "Publications", "Awards"],
+    Practice: ["Awards"],
     Projects: ["Architecture", "Interior Design", "Landscape"],
     People: ["Team", "Leadership", "Careers"],
     Contact: ["Support", "Inquiry", "Location"],
@@ -22,17 +24,23 @@ const Footer = () => {
     Awards: ["National", "International"],
     Architecture: ["Commercial", "Residential"],
     "Interior Design": ["Luxury Homes", "Hotels"],
-    Landscape: ["Parks", "Urban Design"],
+    Landscape: ["Urban Design"],
     Team: ["Designers", "Engineers"],
     Leadership: ["CEO", "Directors"],
     Careers: ["Open Positions", "Internships"],
     Support: ["FAQs", "Help Center"],
     Inquiry: ["Business", "General"],
-    Location: ["Headquarters", "Branches"],
+    Location: [],
   };
 
   const toggleLanguage = () => {
     setLanguage(language === "ENGLISH" ? "HINDI" : "ENGLISH");
+  };
+
+  const handleThirdItemClick = (item) => {
+    if (item === "Location") {
+      navigate("/contact#map"); // ✅ Navigate to contact page's map section
+    }
   };
 
   return (
@@ -46,7 +54,9 @@ const Footer = () => {
               {firstColumn.map((item) => (
                 <motion.li
                   key={item}
-                  className="cursor-pointer py-2 md:mx-8 hover:text-gray-400"
+                  className={`cursor-pointer py-2 md:mx-8 hover:text-gray-400 ${
+                    selectedFirstCol === item ? "border-b-2 border-white" : ""
+                  }`}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     setSelectedFirstCol(item);
@@ -71,9 +81,14 @@ const Footer = () => {
                 {secondColumnOptions[selectedFirstCol].map((item) => (
                   <motion.li
                     key={item}
-                    className="cursor-pointer py-2 hover:text-gray-400"
+                    className={`cursor-pointer py-2 hover:text-gray-400 ${
+                      selectedSecondCol === item ? "border-b-2 border-white" : ""
+                    }`}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedSecondCol(item)}
+                    onClick={() => {
+                      setSelectedSecondCol(item);
+                      if (item === "Location") handleThirdItemClick(item); // ✅ Handle Location click
+                    }}
                   >
                     {item.toUpperCase()}
                   </motion.li>
@@ -92,7 +107,11 @@ const Footer = () => {
             >
               <ul>
                 {thirdColumnOptions[selectedSecondCol].map((item) => (
-                  <motion.li key={item} className="cursor-pointer py-2 hover:text-gray-400">
+                  <motion.li
+                    key={item}
+                    className="cursor-pointer py-2 hover:text-gray-400"
+                    onClick={() => handleThirdItemClick(item)}
+                  >
                     {item.toUpperCase()}
                   </motion.li>
                 ))}
