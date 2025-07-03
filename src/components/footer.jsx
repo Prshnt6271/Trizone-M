@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
-import { useNavigate } from "react-router-dom"; // ✅ Make sure you're using React Router
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const [selectedFirstCol, setSelectedFirstCol] = useState(null);
   const [selectedSecondCol, setSelectedSecondCol] = useState(null);
   const [language, setLanguage] = useState("ENGLISH");
-  const navigate = useNavigate(); // ✅ For page navigation
+  const navigate = useNavigate();
 
   const firstColumn = ["Practice", "Projects", "People", "Contact"];
 
@@ -37,9 +37,32 @@ const Footer = () => {
     setLanguage(language === "ENGLISH" ? "HINDI" : "ENGLISH");
   };
 
+  const handleFirstColClick = (item) => {
+    if (selectedFirstCol === item) {
+      // Clicking the same item again collapses everything
+      setSelectedFirstCol(null);
+      setSelectedSecondCol(null);
+    } else {
+      setSelectedFirstCol(item);
+      setSelectedSecondCol(null);
+    }
+  };
+
+  const handleSecondColClick = (item) => {
+    if (selectedSecondCol === item) {
+      // Clicking the same item again collapses the third column
+      setSelectedSecondCol(null);
+    } else {
+      setSelectedSecondCol(item);
+      if (item === "Location") {
+        navigate("/contact#map");
+      }
+    }
+  };
+
   const handleThirdItemClick = (item) => {
     if (item === "Location") {
-      navigate("/contact#map"); // ✅ Navigate to contact page's map section
+      navigate("/contact#map");
     }
   };
 
@@ -58,10 +81,7 @@ const Footer = () => {
                     selectedFirstCol === item ? "border-b-2 border-white" : ""
                   }`}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setSelectedFirstCol(item);
-                    setSelectedSecondCol(null);
-                  }}
+                  onClick={() => handleFirstColClick(item)}
                 >
                   {item.toUpperCase()}
                 </motion.li>
@@ -85,10 +105,7 @@ const Footer = () => {
                       selectedSecondCol === item ? "border-b-2 border-white" : ""
                     }`}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setSelectedSecondCol(item);
-                      if (item === "Location") handleThirdItemClick(item); // ✅ Handle Location click
-                    }}
+                    onClick={() => handleSecondColClick(item)}
                   >
                     {item.toUpperCase()}
                   </motion.li>
