@@ -7,17 +7,22 @@ function Contact() {
   const [showContent, setShowContent] = useState(false);
   const [mapReady, setMapReady] = useState(false);
 
+  // Scroll to map when both content and map are ready
   useEffect(() => {
     const shouldScroll = sessionStorage.getItem("scrollToMap");
 
-    if (shouldScroll === "true" && mapReady) {
-      const el = document.getElementById("map");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
+    if (showContent && mapReady && shouldScroll === "true") {
+      // Timeout to ensure DOM is fully painted (especially for mobile)
+      setTimeout(() => {
+        const el = document.getElementById("map");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 500); // adjust delay if needed
+
       sessionStorage.removeItem("scrollToMap");
     }
-  }, [mapReady]);
+  }, [showContent, mapReady]);
 
   return (
     <>

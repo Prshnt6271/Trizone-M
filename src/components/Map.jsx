@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 
 const Map = ({ onMapLoad }) => {
   useEffect(() => {
-    // Tell parent component the map is ready
     if (onMapLoad) {
       onMapLoad();
     }
