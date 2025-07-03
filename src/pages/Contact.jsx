@@ -1,28 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Contact_Hero from "../components/Contact_Hero";
 import Content from "../components/Content";
 import Map from "../components/Map";
+import { useLocation } from "react-router-dom";
 
 function Contact() {
   const [showContent, setShowContent] = useState(false);
-  const [mapReady, setMapReady] = useState(false);
+  const mapRef = useRef(null);
+  const location = useLocation();
 
-  // Scroll to map when both content and map are ready
   useEffect(() => {
-    const shouldScroll = sessionStorage.getItem("scrollToMap");
-
-    if (showContent && mapReady && shouldScroll === "true") {
-      // Timeout to ensure DOM is fully painted (especially for mobile)
+    // Check if URL has #map hash and content is shown
+    if (location.hash === '#map' && showContent && mapRef.current) {
+      // Small timeout to ensure DOM is ready
       setTimeout(() => {
-        const el = document.getElementById("map");
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }, 500); // adjust delay if needed
-
-      sessionStorage.removeItem("scrollToMap");
+        mapRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
-  }, [showContent, mapReady]);
+  }, [location.hash, showContent]);
 
   return (
     <>
@@ -30,7 +25,9 @@ function Contact() {
       {showContent && (
         <>
           <Content />
-          <Map onMapLoad={() => setMapReady(true)} />
+          <div ref={mapRef}>
+            <Map />
+          </div>
         </>
       )}
     </>
