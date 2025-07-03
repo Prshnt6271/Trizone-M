@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-const Map = () => {
+const Map = ({ onMapLoad }) => {
+  useEffect(() => {
+    // Tell parent component the map is ready
+    if (onMapLoad) {
+      onMapLoad();
+    }
+  }, [onMapLoad]);
+
   return (
     <section id="map" className="h-[400px]">
       <iframe

@@ -5,23 +5,19 @@ import Map from "../components/Map";
 
 function Contact() {
   const [showContent, setShowContent] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
-    if (showContent) {
-      const shouldScroll = sessionStorage.getItem("scrollToMap");
+    const shouldScroll = sessionStorage.getItem("scrollToMap");
 
-      if (shouldScroll === "true") {
-        // Small delay to ensure Map component has rendered
-        setTimeout(() => {
-          const el = document.getElementById("map");
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 300); // adjust delay if needed
-        sessionStorage.removeItem("scrollToMap");
+    if (shouldScroll === "true" && mapReady) {
+      const el = document.getElementById("map");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
       }
+      sessionStorage.removeItem("scrollToMap");
     }
-  }, [showContent]); // run when showContent becomes true
+  }, [mapReady]);
 
   return (
     <>
@@ -29,7 +25,7 @@ function Contact() {
       {showContent && (
         <>
           <Content />
-          <Map />
+          <Map onMapLoad={() => setMapReady(true)} />
         </>
       )}
     </>
