@@ -16,6 +16,13 @@ import Service from "./pages/service";
 import Arch from "./components/Arch"
 import Projectt1 from "./pages/Archecture/Projectt1";
 import  Interior from "./pages/Interior/Interior";
+import Team from "./pages/Team";
+import Business from "./pages/Business";
+import ScrollToTop from "./components/ScrollToTop";
+import Awards from "./pages/Awards";
+import OpenPositions from "./pages/OpenPositions";
+import Internships from "./pages/Internships";
+import FAQs from "./pages/FAQs";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -39,6 +46,7 @@ function App() {
   return (
     <div>
       <Header />
+            <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/arch" element={<Arch />} />
@@ -47,6 +55,12 @@ function App() {
 
 
         <Route path="/properties" element={<PropertiesPage />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/business" element={<Business />} />
+          <Route path="/awards" element={<Awards />} />
+           <Route path="/open-positions" element={<OpenPositions />} />
+        <Route path="/internships" element={<Internships />} />
+          <Route path="/faqs" element={<FAQs />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/service" element={<Service />} />

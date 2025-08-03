@@ -14,18 +14,16 @@ const Footer = () => {
   const secondColumnOptions = {
     Practice: ["Awards"],
     Projects: ["Architecture", "Interior Design", "Landscape"],
-    People: ["Team", "Leadership", "Careers"],
+    People: ["Team", "Careers"],
     Contact: ["Support", "Inquiry", "Location"],
   };
 
   const thirdColumnOptions = {
     Ethos: ["Mission", "Values"],
     Publications: ["Research", "Articles"],
-    Awards: ["National", "International"],
     Architecture: ["Commercial", "Residential"],
     "Interior Design": ["Luxury Homes", "Hotels"],
     Landscape: ["Urban Design"],
-    Team: ["Designers", "Engineers"],
     Leadership: ["CEO", "Directors"],
     Careers: ["Open Positions", "Internships"],
     Support: ["FAQs", "Help Center"],
@@ -39,7 +37,6 @@ const Footer = () => {
 
   const handleFirstColClick = (item) => {
     if (selectedFirstCol === item) {
-      // Clicking the same item again collapses everything
       setSelectedFirstCol(null);
       setSelectedSecondCol(null);
     } else {
@@ -49,8 +46,17 @@ const Footer = () => {
   };
 
   const handleSecondColClick = (item) => {
+    if (item === "Team") {
+      navigate("/team");
+      return;
+    }
+    if (item === "Awards") {
+  navigate("/awards");
+  return;
+}
+
+
     if (selectedSecondCol === item) {
-      // Clicking the same item again collapses the third column
       setSelectedSecondCol(null);
     } else {
       setSelectedSecondCol(item);
@@ -60,11 +66,25 @@ const Footer = () => {
     }
   };
 
-  const handleThirdItemClick = (item) => {
-    if (item === "Location") {
-      navigate("/contact#map");
-    }
-  };
+const handleThirdItemClick = (item) => {
+  if (item === "Location") {
+    navigate("/contact#map");
+  } else if (item === "Help Center" || item === "General") {
+    navigate("/contact");
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
+  } else if (item === "Business") {
+    navigate("/business");
+  } else if (item === "Open Positions") {
+    navigate("/open-positions");
+  } else if (item === "Internships") {
+    navigate("/internships");
+  }
+  else if (item === "FAQs") {
+  navigate("/faqs");
+}
+};
 
   return (
     <div className="bg-black p-10 text-white relative">
