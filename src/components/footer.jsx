@@ -21,9 +21,6 @@ const Footer = () => {
   const thirdColumnOptions = {
     Ethos: ["Mission", "Values"],
     Publications: ["Research", "Articles"],
-    Architecture: ["Commercial", "Residential"],
-    "Interior Design": ["Luxury Homes", "Hotels"],
-    Landscape: ["Urban Design"],
     Leadership: ["CEO", "Directors"],
     Careers: ["Open Positions", "Internships"],
     Support: ["FAQs", "Help Center"],
@@ -58,7 +55,20 @@ const Footer = () => {
 
     if (selectedSecondCol === item) {
       setSelectedSecondCol(null);
-    } else {
+    } 
+     if (item === "Architecture") {
+    navigate("/arch");
+    return;
+  }
+  if (item === "Interior Design") {
+    navigate("/properties");
+    return;
+  }
+  if (item === "Landscape") {
+    navigate("/land");
+    return;
+  }
+    else {
       setSelectedSecondCol(item);
       if (item === "Location") {
         navigate("/contact#map");

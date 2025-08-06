@@ -40,7 +40,7 @@ function Hero() {
     } else if (text === "INTERIORS") {
       navigate("/properties");
     } else if (text === "LANDSCAPE") {
-      navigate("/landscape");
+      navigate("/land");
     }
   };
 

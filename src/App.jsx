@@ -14,6 +14,8 @@ import HeroPage from "./components/Hero_Page";
 import Project2 from "./pages/project2";
 import Service from "./pages/service";
 import Arch from "./components/Arch"
+import Land from './components/Landscape';
+
 import Projectt1 from "./pages/Archecture/Projectt1";
 import  Interior from "./pages/Interior/Interior";
 import Team from "./pages/Team";
@@ -50,6 +52,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/arch" element={<Arch />} />
+        <Route path="/land" element={<Land />} />
+
         <Route path="/architecture/:EsselTower" element={<Projectt1 />} />
         <Route path="/Interior/:EsselTower" element={<Interior />} />
 
@@ -77,3 +81,5 @@ function App() {
 }
 
 export default App;
+
+
